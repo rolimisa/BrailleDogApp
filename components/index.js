@@ -1,0 +1,11 @@
+export { default as Login } from './login';
+export { default as Cadastrar} from './cadastro';
+export { default as Menu } from './menu';
+export {default as AlfabetoBraille} from './alfabetobraille';
+export {default as Configuracoes} from './configuracoes';
+export {default as DigiteNumero} from './digitenumero';
+export {default as DigitePalavra} from './digitepalavra';
+export {default as Exercicios} from './exerciciosleitura'; 
+export {default as Historico} from './historicopalavras';
+export {default as Sobre} from './sobreapp'; 
+export {default as OpcoesPalavras} from './opcoespalavras';
