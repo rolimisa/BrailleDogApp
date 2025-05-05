@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import {Login, Cadastrar, Menu, AlfabetoBraille, Configuracoes, DigiteNumero, DigitePalavra, Exercicios, Historico, OpcoesPalavras, Sobre} from './components/index'; 
+import {Login, Cadastrar, Menu, AlfabetoBraille, Configuracoes, DigiteNumero, DigitePalavra, Exercicios, Historico, OpcoesPalavras, Sobre, ConfiguraAcessibilidade, EditaPerfil} from './components/index'; 
 
 const Stack = createStackNavigator();
 
@@ -25,7 +25,7 @@ function App() {
           name="Menu"
           component={Menu}
           options={{ 
-            titlle:'Login'
+            tittle:'Login'
            }} 
         />
 
@@ -41,7 +41,7 @@ function App() {
           name="Opcoes"
           component={OpcoesPalavras}
           options={{
-            titlle: 'Opções Palavras em Braille'
+            tittle: 'Opções Palavras em Braille'
           }}
         />
 
@@ -49,7 +49,7 @@ function App() {
           name="Palavras"
           component={DigitePalavra}
           options={{
-            titlle: 'Palavras em Braille'
+            tittle: 'Palavras em Braille'
           }}
         />
 
@@ -57,7 +57,7 @@ function App() {
           name="Numeros"
           component={DigiteNumero}
           options={{
-            titlle: 'Numeros em Braille'
+            tittle: 'Numeros em Braille'
           }}
         />
 
@@ -65,7 +65,7 @@ function App() {
           name="Configuracoes"
           component={Configuracoes}
           options={{
-            titlle: 'Configuracoes'
+            tittle: 'Configuracoes'
           }}
           />
 
@@ -73,7 +73,7 @@ function App() {
           name="Exercicios"
           component={Exercicios}
           options={{
-            titlle: 'Exercicios'
+            tittle: 'Exercicios'
           }}
           />
 
@@ -81,7 +81,7 @@ function App() {
           name="Historico"
           component={Historico}
           options={{
-            titlle: 'Historico de palavras consultadas'
+            tittle: 'Historico de palavras consultadas'
           }}
           />
 
@@ -89,7 +89,23 @@ function App() {
           name="Sobre"
           component={Sobre}
           options={{
-            titlle: 'Sobre'
+            tittle: 'Sobre'
+          }}
+          />
+
+          <Stack.Screen
+          name="Configurar Acessibilidade"
+          component={ConfiguraAcessibilidade}
+          options={{
+            tittle: 'Configurar Acessbilidade'
+          }}
+          />
+
+          <Stack.Screen
+          name="Editar Perfil"
+          component={EditaPerfil}
+          options={{
+            tittle: 'Editar Perfil'
           }}
           />
 

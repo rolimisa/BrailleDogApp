@@ -1,21 +1,71 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
 
-export default function ConfiguracoesScreen() {
+const EditarPerfil = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Tela de Configurações</Text>
+      <StatusBar barStyle="dark-content" backgroundColor="#3B4CCA" />
+      <View style={styles.header}>
+        <Text style={styles.headerText}>EDITAR DE PERFIL</Text>
+      </View>
+
+      <View style={styles.content}>
+        <TouchableOpacity
+          style={styles.circleButton}
+          onPress={() => navigation.navigate('Configurar Acessibilidade')}
+        >
+          <Text style={styles.buttonText}>CONFIGURAR{"\n"}ACESSIBILIDADE{"\n"}DO APP</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.circleButton}
+          onPress={() => navigation.navigate('Editar Perfil')}
+        >
+          <Text style={styles.buttonText}>EDITAR{"\n"}PERFIL</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
-}
+};
+
+export default EditarPerfil;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#ADD8E6', // azul claro
+  },
+  header: {
+    backgroundColor: '#3B4CCA', // azul escuro
+    padding: 20,
     alignItems: 'center',
   },
-  text: {
-    fontSize: 20,
+  headerText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+  },
+  content: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 40,
+  },
+  circleButton: {
+    backgroundColor: '#F5F5B0', // amarelo claro
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: '#000',
+  },
+  buttonText: {
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

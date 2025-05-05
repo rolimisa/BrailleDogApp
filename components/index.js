@@ -9,3 +9,5 @@ export {default as Exercicios} from './exerciciosleitura';
 export {default as Historico} from './historicopalavras';
 export {default as Sobre} from './sobreapp'; 
 export {default as OpcoesPalavras} from './opcoespalavras';
+export {default as ConfiguraAcessibilidade} from './configuraacessibilidade';
+export {default as EditaPerfil} from './editarperfil'; 
