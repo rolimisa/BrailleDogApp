@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import {Login, Cadastrar, Menu, AlfabetoBraille, Configuracoes, DigiteNumero, DigitePalavra, Exercicios, Historico, OpcoesPalavras, Sobre, ConfiguraAcessibilidade, EditaPerfil} from './components/index'; 
+import {Login, Cadastrar, Menu, AlfabetoBraille, Configuracoes, DigiteNumero, DigitePalavra, Exercicios, Historico, OpcoesPalavras, Sobre, ConfiguraAcessibilidade, EditaPerfil, EsqueciSenha} from './components/index'; 
 
 const Stack = createStackNavigator();
 
@@ -14,6 +14,13 @@ function App() {
           component={Login}
           options={{ headerShown: false }} // Não mostra o cabeçalho na tela de login
         />
+        <Stack.Screen
+          name="EsqueciSenha"
+          component={EsqueciSenha}
+          options={{
+            title: 'Esqueci Senha', // Título da tela
+          }}
+          />
         <Stack.Screen
           name="Cadastrar"
           component={Cadastrar}
@@ -94,7 +101,7 @@ function App() {
           />
 
           <Stack.Screen
-          name="Configurar Acessibilidade"
+          name="ConfigurarAcessibilidade"
           component={ConfiguraAcessibilidade}
           options={{
             tittle: 'Configurar Acessbilidade'

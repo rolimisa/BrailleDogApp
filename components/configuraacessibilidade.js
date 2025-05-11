@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import {View,Text,Switch,StyleSheet,StatusBar,Slider} from 'react-native';
+import {View,Text,Switch,StyleSheet,StatusBar} from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import Slider from '@react-native-community/slider';
 
 const ConfiguraAcessibilidade = () => {
   const [temaClaro, setTemaClaro] = useState(false);

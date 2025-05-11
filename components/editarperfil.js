@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import {View,Text,TextInput,TouchableOpacity,StyleSheet,StatusBar} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, StatusBar, Alert } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
+import auth from '@react-native-firebase/auth';
 
 const PerfilScreen = () => {
   const [usuario, setUsuario] = useState('');
@@ -8,20 +9,58 @@ const PerfilScreen = () => {
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
 
-  const handleSalvar = () => {
-    // Aqui você pode adicionar validação ou lógica de envio
-    alert('Informações salvas com sucesso!');
+  const handleSalvar = async () => {
+    if (senha !== confirmarSenha) {
+      Alert.alert('Erro', 'As senhas não coincidem.');
+      return;
+    }
+
+    const user = auth().currentUser;
+    if (!user) {
+      Alert.alert('Erro', 'Usuário não encontrado.');
+      return;
+    }
+
+    try {
+      // Atualizar email
+      if (email !== user.email) {
+        await user.updateEmail(email);
+        alert('Email atualizado com sucesso!');
+      }
+
+      // Atualizar senha
+      if (senha) {
+        await user.updatePassword(senha);
+        alert('Senha atualizada com sucesso!');
+      }
+
+      // Atualizar nome de usuário
+      if (usuario && usuario !== user.displayName) {
+        await user.updateProfile({ displayName: usuario });
+        alert('Nome de usuário atualizado com sucesso!');
+      }
+
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Erro', 'Ocorreu um erro ao atualizar as informações.');
+    }
   };
 
-  const handleLogout = () => {
-    alert('Você saiu do app.');
+  const handleLogout = async () => {
+    try {
+      await auth().signOut();
+      alert('Você saiu do app.');
+    } catch (error) {
+      console.error(error);
+      alert('Erro ao deslogar.');
+    }
   };
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#3B4CCA" />
       <View style={styles.header}>
-        <Text style={styles.headerText}>EDITAR DE PERFIL</Text>
+        <Text style={styles.headerText}>EDITAR PERFIL</Text>
       </View>
 
       <View style={styles.avatarContainer}>

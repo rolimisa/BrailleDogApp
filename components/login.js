@@ -1,37 +1,103 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FIREBASE_API_KEY } from '@env';
 
 export default function Login({ navigation }) {
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const validarLogin = () => {
-    if (username.trim() === '' || password.trim() === '') {
-      Alert.alert('Erro', 'Por favor, preencha todos os campos.');
-    } else {
-      if (username === 'usuario' && password === 'senha123') {
-        Alert.alert('Sucesso', 'Login realizado com sucesso!');
-        navigation.navigate('Menu');
-      } else {
-        Alert.alert('Erro', 'Usuário ou senha inválidos.');
+  const getFirebaseErrorMessage = (message) => {
+    const errorMessages = {
+      "EMAIL_NOT_FOUND": "Usuário não encontrado",
+      "INVALID_PASSWORD": "Senha incorreta",
+      "USER_DISABLED": "Esta conta foi desativada",
+      "INVALID_EMAIL": "E-mail inválido",
+      "TOO_MANY_ATTEMPTS_TRY_LATER": "Muitas tentativas. Tente mais tarde",
+      "MISSING_PASSWORD": "Preencha a senha",
+      "MISSING_EMAIL": "Preencha o e-mail",
+      "INVALID_LOGIN_CREDENTIALS": "E-mail ou senha inválidos",
+      "DEFAULT": "Erro ao fazer login. Tente novamente."
+    };
+
+    return errorMessages[message] || errorMessages.DEFAULT;
+  };
+
+  const handleLogin = async () => {
+    setErrorMessage('');
+
+    if (email.trim() === '' || password.trim() === '') {
+      setErrorMessage('Preencha todos os campos para fazer login.');
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            password,
+            returnSecureToken: true,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw data.error;
       }
+
+      await AsyncStorage.setItem('userToken', data.idToken);
+      navigation.navigate('Menu');
+    } catch (error) {
+      console.log('Erro de login:', error); // Debug pra te ajudar
+      setErrorMessage(getFirebaseErrorMessage(error.message));
     }
   };
+
+  useEffect(() => {
+    if (errorMessage) {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      fadeAnim.setValue(0);
+    }
+  }, [errorMessage]);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>BrailleDog</Text>
 
+      {errorMessage ? (
+        <Animated.View style={[styles.errorContainer, { opacity: fadeAnim }]}>
+          <Icon name="alert-circle" size={16} color="#d32f2f" />
+          <Text style={styles.errorText}> {errorMessage}</Text>
+        </Animated.View>
+      ) : null}
+
       <View style={styles.inputContainer}>
-        <Icon name="account" size={22} color="#666" style={styles.icon} />
+        <Icon name="email" size={22} color="#666" style={styles.icon} />
         <TextInput
-          placeholder="Usuário"
+          placeholder="E-mail"
           placeholderTextColor="#999"
           style={styles.input}
-          value={username}
-          onChangeText={setUsername}
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
         />
       </View>
 
@@ -50,11 +116,15 @@ export default function Login({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity>
-        <Text style={styles.forgotText}>Esqueci minha senha</Text>
-      </TouchableOpacity>
+     <TouchableOpacity onPress={() => navigation.navigate('EsqueciSenha')}>
+      <Text style={styles.forgotText}>Esqueci minha senha</Text>
+    </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Menu')}>
+      <TouchableOpacity 
+        style={styles.button} 
+        onPress={handleLogin}
+        disabled={email.trim() === '' || password.trim() === ''}
+      >
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
 
@@ -88,8 +158,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     width: '100%',
     height: 50,
-    elevation: 3, // para sombra no Android
-    shadowColor: '#000', // para sombra no iOS
+    elevation: 3,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -126,5 +196,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#555',
     marginTop: 10,
+  },
+  errorContainer: {
+    backgroundColor: '#ffebee',
+    padding: 12,
+    borderRadius: 8,
+    marginVertical: 10,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#d32f2f',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  errorText: {
+    color: '#d32f2f',
+    fontSize: 14,
   },
 });

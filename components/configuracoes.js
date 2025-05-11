@@ -12,7 +12,7 @@ const EditarPerfil = ({ navigation }) => {
       <View style={styles.content}>
         <TouchableOpacity
           style={styles.circleButton}
-          onPress={() => navigation.navigate('Configurar Acessibilidade')}
+          onPress={() => navigation.navigate('ConfigurarAcessibilidade')}
         >
           <Text style={styles.buttonText}>CONFIGURAR{"\n"}ACESSIBILIDADE{"\n"}DO APP</Text>
         </TouchableOpacity>
