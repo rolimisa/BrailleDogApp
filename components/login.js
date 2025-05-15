@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Animated, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FIREBASE_API_KEY } from '@env';
@@ -78,9 +78,15 @@ export default function Login({ navigation }) {
   }, [errorMessage]);
 
   return (
+   
     <View style={styles.container}>
+      <Image 
+      source={require('./img/logo.png')} // ajusta o caminho!
+      style={styles.logo}
+      resizeMode="contain"
+     />
       <Text style={styles.title}>BrailleDog</Text>
-
+      
       {errorMessage ? (
         <Animated.View style={[styles.errorContainer, { opacity: fadeAnim }]}>
           <Icon name="alert-circle" size={16} color="#d32f2f" />
@@ -149,6 +155,12 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     color: '#333',
   },
+  logo: {
+  width: 200,       // mais largo
+  height: 250,      // mantém ou ajusta a altura como quiser
+  marginBottom: 20,
+  borderRadius: 80, // metade da altura ou largura (o que for maior) pra ficar bem arredondado
+},
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',

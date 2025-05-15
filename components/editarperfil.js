@@ -1,27 +1,135 @@
-import React, { useState } from 'react';
-import {View,Text,TextInput,TouchableOpacity,StyleSheet,StatusBar} from 'react-native';
-import { Ionicons, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, StatusBar } from 'react-native';
+import { Ionicons, MaterialCommunityIcons, Feather, FontAwesome } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FIREBASE_API_KEY } from '@env';
 
-const PerfilScreen = () => {
+export default function PerfilScreen({ navigation }) {
   const [usuario, setUsuario] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
+  const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSalvar = () => {
-    // Aqui você pode adicionar validação ou lógica de envio
-    alert('Informações salvas com sucesso!');
+  // Pega dados do usuário atual ao montar a tela
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const token = await AsyncStorage.getItem('userToken');
+        if (!token) {
+          Alert.alert('Erro', 'Usuário não autenticado');
+          navigation.navigate('Login'); // manda voltar pra login se não tiver token
+          return;
+        }
+
+        // Pega os dados do usuário com o token (opcional)
+        const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_API_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken: token }),
+        });
+
+        const data = await res.json();
+        if (res.ok && data.users && data.users.length > 0) {
+          const user = data.users[0];
+          setEmail(user.email || '');
+          setUsuario(user.displayName || '');
+        } else {
+          throw data.error || new Error('Erro ao buscar dados do usuário');
+        }
+      } catch (error) {
+        Alert.alert('Erro', error.message || 'Erro desconhecido');
+      }
+    };
+
+    loadUserData();
+  }, []);
+
+  const handleSalvar = async () => {
+    if (senha !== confirmarSenha) {
+      Alert.alert('Erro', 'As senhas não coincidem');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const idToken = await AsyncStorage.getItem('userToken');
+      if (!idToken) {
+        Alert.alert('Erro', 'Usuário não autenticado');
+        setLoading(false);
+        return;
+      }
+
+      const body = {
+        idToken,
+        returnSecureToken: true,
+      };
+      if (email) body.email = email;
+      if (senha) body.password = senha;
+      if (usuario) body.displayName = usuario;
+
+      const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=${FIREBASE_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw data.error || new Error('Erro ao atualizar perfil');
+      }
+
+      // Atualiza o token se vier um novo (sempre atualiza pra manter sessão)
+      if (data.idToken) {
+        await AsyncStorage.setItem('userToken', data.idToken);
+      }
+
+      Alert.alert('Sucesso', 'Perfil atualizado!');
+      setSenha('');
+      setConfirmarSenha('');
+    } catch (error) {
+      Alert.alert('Erro', error.message || 'Falha ao atualizar perfil');
+    }
+    setLoading(false);
   };
 
-  const handleLogout = () => {
-    alert('Você saiu do app.');
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('userToken');
+    Alert.alert('Logout', 'Você saiu do app.');
+    navigation.navigate('Login');
   };
+
+  const renderEditableField = (icon, value, onChange, placeholder, secure = false, mostrar, toggleMostrar) => (
+    <View style={styles.editFieldContainer}>
+      <View style={styles.editFieldContent}>
+        {icon}
+        <TextInput
+          style={styles.editInput}
+          placeholder={placeholder}
+          secureTextEntry={secure && !mostrar}
+          value={value}
+          onChangeText={onChange}
+          autoCapitalize="none"
+        />
+        {secure ? (
+          <TouchableOpacity onPress={toggleMostrar}>
+            <Feather name={mostrar ? 'eye' : 'eye-off'} size={20} color="#3B4CCA" />
+          </TouchableOpacity>
+        ) : (
+          <Feather name="edit" size={18} color="#3B4CCA" />
+        )}
+      </View>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#3B4CCA" />
       <View style={styles.header}>
-        <Text style={styles.headerText}>EDITAR DE PERFIL</Text>
+        <Text style={styles.headerText}>EDITAR PERFIL</Text>
       </View>
 
       <View style={styles.avatarContainer}>
@@ -29,51 +137,33 @@ const PerfilScreen = () => {
       </View>
 
       <View style={styles.form}>
-        <View style={styles.inputRow}>
-          <Ionicons name="person" size={20} color="black" />
-          <TextInput
-            style={styles.input}
-            placeholder="Nome de usuário"
-            value={usuario}
-            onChangeText={setUsuario}
-          />
-        </View>
+        {renderEditableField(<Ionicons name="person" size={20} color="black" />, usuario, setUsuario, 'Nome de usuário')}
+        {renderEditableField(<MaterialCommunityIcons name="email-outline" size={20} color="black" />, email, setEmail, 'Email')}
+        {renderEditableField(
+          <MaterialCommunityIcons name="lock-outline" size={20} color="black" />,
+          senha,
+          setSenha,
+          'Nova senha',
+          true,
+          mostrarSenha,
+          () => setMostrarSenha(!mostrarSenha)
+        )}
+        {renderEditableField(
+          <MaterialCommunityIcons name="lock-outline" size={20} color="black" />,
+          confirmarSenha,
+          setConfirmarSenha,
+          'Confirmar nova senha',
+          true,
+          mostrarConfirmarSenha,
+          () => setMostrarConfirmarSenha(!mostrarConfirmarSenha)
+        )}
 
-        <View style={styles.inputRow}>
-          <MaterialCommunityIcons name="email-outline" size={20} color="black" />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            keyboardType="email-address"
-            value={email}
-            onChangeText={setEmail}
-          />
-        </View>
-
-        <View style={styles.inputRow}>
-          <MaterialCommunityIcons name="eye-off-outline" size={20} color="black" />
-          <TextInput
-            style={styles.input}
-            placeholder="Senha"
-            secureTextEntry
-            value={senha}
-            onChangeText={setSenha}
-          />
-        </View>
-
-        <View style={styles.inputRow}>
-          <MaterialCommunityIcons name="eye-off-outline" size={20} color="black" />
-          <TextInput
-            style={styles.input}
-            placeholder="Confirmar senha"
-            secureTextEntry
-            value={confirmarSenha}
-            onChangeText={setConfirmarSenha}
-          />
-        </View>
-
-        <TouchableOpacity style={styles.saveButton} onPress={handleSalvar}>
-          <Text style={styles.saveButtonText}>SALVAR</Text>
+        <TouchableOpacity
+          style={[styles.saveButton, loading && { opacity: 0.7 }]}
+          onPress={handleSalvar}
+          disabled={loading}
+        >
+          <Text style={styles.saveButtonText}>{loading ? 'SALVANDO...' : 'SALVAR'}</Text>
         </TouchableOpacity>
       </View>
 
@@ -83,14 +173,12 @@ const PerfilScreen = () => {
       </TouchableOpacity>
     </View>
   );
-};
-
-export default PerfilScreen;
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ADD8E6',
+    backgroundColor: '#a9c2e7',
   },
   header: {
     backgroundColor: '#3B4CCA',
@@ -99,7 +187,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     letterSpacing: 1,
   },
@@ -108,34 +196,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   form: {
-    backgroundColor: '#D6EAF8',
     marginHorizontal: 20,
-    borderRadius: 20,
-    padding: 20,
-    gap: 15,
-    elevation: 4,
+    padding: 10,
+    gap: 20,
   },
-  inputRow: {
+  editFieldContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 12,
+    elevation: 3,
+  },
+  editFieldContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomColor: '#000',
-    borderBottomWidth: 1,
-    paddingBottom: 5,
   },
-  input: {
-    marginLeft: 10,
+  editInput: {
     flex: 1,
+    marginLeft: 10,
+    fontSize: 16,
   },
   saveButton: {
     backgroundColor: '#3B4CCA',
-    padding: 10,
-    marginTop: 10,
-    borderRadius: 10,
+    padding: 14,
+    borderRadius: 12,
     alignItems: 'center',
   },
   saveButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: 16,
   },
   logout: {
     alignItems: 'center',

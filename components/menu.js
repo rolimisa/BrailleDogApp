@@ -87,18 +87,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingTop: 50,
+    padding:10,
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
     fontFamily: 'Comic Sans MS',
-  },
-  underline: {
-    height: 3,
-    width: 80,
-    backgroundColor: '#4a4aa3',
-    borderRadius: 2,
-    marginBottom: 20,
   },
   brailleBackground: {
     position: 'absolute',
@@ -108,33 +102,31 @@ const styles = StyleSheet.create({
     color: '#ffffff22', // bem sutil
   },
   cardContainer: {
-    borderWidth: 2,
-    borderColor: '#4a4aa3',
-    borderRadius: 20,
-    padding: 10,
-    marginVertical: 8,
-    backgroundColor: '#ffffff11',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 15,
-  },
-  button: {
-    borderRadius: 60,
-    width: 100,
-    height: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: 8,
-    borderWidth: 1.5,
-    borderColor: '#000',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  },
+  borderRadius: 20,
+  padding: 10,
+  marginVertical: 20, // antes 8, agora mais espaçamento entre grupos
+  backgroundColor: '#ffffff11',
+},
+buttonRow: {
+  flexDirection: 'row',
+  justifyContent: 'center',
+  gap: 30, // ou use space-around se quiser automático
+},
+button: {
+  borderRadius: 60,
+  width: 100,
+  height: 100,
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginHorizontal: 8, // pode aumentar pra mais distância
+  borderWidth: 1.5,
+  borderColor: '#000',
+  elevation: 4,
+  shadowColor: '#000',
+  shadowOffset: { width: 2, height: 2 },
+  shadowOpacity: 0.2,
+  shadowRadius: 4,
+},
   buttonText: {
     textAlign: 'center',
     fontSize: 12,

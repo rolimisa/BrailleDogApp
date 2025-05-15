@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {View,Text,Switch,StyleSheet,StatusBar} from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-//import Slider from '@react-native-community/slider';
 
 const ConfiguraAcessibilidade = () => {
   const [temaClaro, setTemaClaro] = useState(false);
@@ -45,17 +44,6 @@ const ConfiguraAcessibilidade = () => {
       </View>
 
       <View style={styles.box}>
-        <Text style={styles.label}>TAMANHO DO TEXTO</Text>
-        {/* <Slider
-          style={{ width: '100%' }}
-          minimumValue={12}
-          maximumValue={24}
-          step={1}
-          value={tamanhoTexto}
-          onValueChange={setTamanhoTexto}
-          minimumTrackTintColor="#3B4CCA"
-          maximumTrackTintColor="#ccc"
-        /> */}
         <Text style={[styles.previewText, { fontSize: tamanhoTexto }]}>
           Texto de exemplo
         </Text>

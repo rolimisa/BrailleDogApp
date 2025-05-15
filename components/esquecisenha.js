@@ -1,33 +1,50 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
-
 export default function EsqueciSenha({ navigation }) {
   const [email, setEmail] = useState('');
   const [mensagem, setMensagem] = useState('');
   const [erro, setErro] = useState('');
 
+  const FIREBASE_API_KEY = 'AIzaSyD6tz12bZnHPNuHomOmUYSQpBpG9vkZEQc'; // Coloque aqui sua chave de API do Firebase
+
   const handleResetPassword = async () => {
     if (!email) {
       setErro('Informe um e-mail válido');
+      setMensagem('');
       return;
     }
 
     try {
-      const methods = await auth().fetchSignInMethodsForEmail(email);
+      const response = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${FIREBASE_API_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            requestType: 'PASSWORD_RESET',
+            email: email,
+          }),
+        }
+      );
 
-      if (methods.length === 0) {
-        setErro('Esse e-mail não está cadastrado');
+      const data = await response.json();
+
+      if (response.ok) {
+        setMensagem('E-mail de redefinição enviado!');
+        setErro('');
+      } else {
+        const errorMessage = data.error?.message;
+
+        if (errorMessage === 'EMAIL_NOT_FOUND') {
+          setErro('Esse e-mail não está cadastrado');
+        } else {
+          setErro('Erro ao enviar e-mail. Tente novamente.');
+        }
         setMensagem('');
-        return;
       }
-
-      await auth().sendPasswordResetEmail(email);
-      setMensagem('E-mail de redefinição enviado!');
-      setErro('');
-    } catch (err) {
-      console.error(err);
-      setErro('Erro ao enviar e-mail. Tente novamente.');
+    } catch (error) {
+      setErro('Erro de conexão. Tente novamente.');
       setMensagem('');
     }
   };
