@@ -1,6 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, StatusBar } from 'react-native';
-import { Ionicons, MaterialCommunityIcons, Feather, FontAwesome } from '@expo/vector-icons';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  StatusBar
+} from 'react-native';
+import {
+  Ionicons,
+  MaterialCommunityIcons,
+  Feather,
+  FontAwesome
+} from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FIREBASE_API_KEY } from '@env';
 
@@ -12,26 +25,34 @@ export default function PerfilScreen({ navigation }) {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isDark, setIsDark] = useState(false);
 
-  // Pega dados do usuário atual ao montar a tela
   useEffect(() => {
+    const carregarTema = async () => {
+      const temaSalvo = await AsyncStorage.getItem('darkTheme');
+      if (temaSalvo !== null) setIsDark(temaSalvo === 'true');
+    };
+
     const loadUserData = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
         if (!token) {
           Alert.alert('Erro', 'Usuário não autenticado');
-          navigation.navigate('Login'); // manda voltar pra login se não tiver token
+          navigation.navigate('Login');
           return;
         }
 
-        const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_API_KEY}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idToken: token }),
-        });
+        const res = await fetch(
+          `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_API_KEY}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken: token }),
+          }
+        );
 
         const data = await res.json();
-        if (res.ok && data.users && data.users.length > 0) {
+        if (res.ok && data.users?.length > 0) {
           const user = data.users[0];
           setEmail(user.email || '');
           setUsuario(user.displayName || '');
@@ -43,8 +64,11 @@ export default function PerfilScreen({ navigation }) {
       }
     };
 
+    carregarTema();
     loadUserData();
   }, []);
+
+  const styles = getStyles(isDark);
 
   const handleSalvar = async () => {
     if (senha !== confirmarSenha) {
@@ -69,11 +93,14 @@ export default function PerfilScreen({ navigation }) {
       if (senha) body.password = senha;
       if (usuario) body.displayName = usuario;
 
-      const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=${FIREBASE_API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
+      const response = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${FIREBASE_API_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        }
+      );
 
       const data = await response.json();
 
@@ -81,7 +108,6 @@ export default function PerfilScreen({ navigation }) {
         throw data.error || new Error('Erro ao atualizar perfil');
       }
 
-      // Atualiza o token se vier um novo (sempre atualiza pra manter sessão)
       if (data.idToken) {
         await AsyncStorage.setItem('token', data.idToken);
       }
@@ -108,6 +134,7 @@ export default function PerfilScreen({ navigation }) {
         <TextInput
           style={styles.editInput}
           placeholder={placeholder}
+          placeholderTextColor={isDark ? '#ccc' : '#888'}
           secureTextEntry={secure && !mostrar}
           value={value}
           onChangeText={onChange}
@@ -115,10 +142,10 @@ export default function PerfilScreen({ navigation }) {
         />
         {secure ? (
           <TouchableOpacity onPress={toggleMostrar}>
-            <Feather name={mostrar ? 'eye' : 'eye-off'} size={20} color="#3B4CCA" />
+            <Feather name={mostrar ? 'eye' : 'eye-off'} size={20} color={isDark ? '#fff' : '#3B4CCA'} />
           </TouchableOpacity>
         ) : (
-          <Feather name="edit" size={18} color="#3B4CCA" />
+          <Feather name="edit" size={18} color={isDark ? '#fff' : '#3B4CCA'} />
         )}
       </View>
     </View>
@@ -126,20 +153,34 @@ export default function PerfilScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#3B4CCA" />
+      <StatusBar
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={isDark ? '#1c1c1c' : '#3B4CCA'}
+      />
+
       <View style={styles.header}>
         <Text style={styles.headerText}>EDITAR PERFIL</Text>
       </View>
 
       <View style={styles.avatarContainer}>
-        <FontAwesome name="user-circle-o" size={100} color="black" />
+        <FontAwesome name="user-circle-o" size={100} color={isDark ? '#fff' : '#000'} />
       </View>
 
       <View style={styles.form}>
-        {renderEditableField(<Ionicons name="person" size={20} color="black" />, usuario, setUsuario, 'Nome de usuário')}
-        {renderEditableField(<MaterialCommunityIcons name="email-outline" size={20} color="black" />, email, setEmail, 'Email')}
         {renderEditableField(
-          <MaterialCommunityIcons name="lock-outline" size={20} color="black" />,
+          <Ionicons name="person" size={20} color={isDark ? '#fff' : 'black'} />,
+          usuario,
+          setUsuario,
+          'Nome de usuário'
+        )}
+        {renderEditableField(
+          <MaterialCommunityIcons name="email-outline" size={20} color={isDark ? '#fff' : 'black'} />,
+          email,
+          setEmail,
+          'Email'
+        )}
+        {renderEditableField(
+          <MaterialCommunityIcons name="lock-outline" size={20} color={isDark ? '#fff' : 'black'} />,
           senha,
           setSenha,
           'Nova senha',
@@ -148,7 +189,7 @@ export default function PerfilScreen({ navigation }) {
           () => setMostrarSenha(!mostrarSenha)
         )}
         {renderEditableField(
-          <MaterialCommunityIcons name="lock-outline" size={20} color="black" />,
+          <MaterialCommunityIcons name="lock-outline" size={20} color={isDark ? '#fff' : 'black'} />,
           confirmarSenha,
           setConfirmarSenha,
           'Confirmar nova senha',
@@ -167,71 +208,74 @@ export default function PerfilScreen({ navigation }) {
       </View>
 
       <TouchableOpacity style={styles.logout} onPress={handleLogout}>
-        <FontAwesome name="power-off" size={30} color="black" />
+        <FontAwesome name="power-off" size={30} color={isDark ? '#fff' : 'black'} />
         <Text style={styles.logoutText}>DESLOGAR DO APP</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#a9c2e7',
-  },
-  header: {
-    backgroundColor: '#3B4CCA',
-    padding: 20,
-    alignItems: 'center',
-  },
-  headerText: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
-    letterSpacing: 1,
-  },
-  avatarContainer: {
-    marginVertical: 20,
-    alignItems: 'center',
-  },
-  form: {
-    marginHorizontal: 20,
-    padding: 10,
-    gap: 20,
-  },
-  editFieldContainer: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 12,
-    elevation: 3,
-  },
-  editFieldContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  editInput: {
-    flex: 1,
-    marginLeft: 10,
-    fontSize: 16,
-  },
-  saveButton: {
-    backgroundColor: '#3B4CCA',
-    padding: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  saveButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  logout: {
-    alignItems: 'center',
-    marginTop: 30,
-  },
-  logoutText: {
-    marginTop: 5,
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-});
+const getStyles = (isDark) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: isDark ? '#121212' : '#a9c2e7',
+    },
+    header: {
+      backgroundColor: '#3B4CCA',
+      padding: 20,
+      alignItems: 'center',
+    },
+    headerText: {
+      color: '#fff',
+      fontSize: 20,
+      fontWeight: 'bold',
+      letterSpacing: 1,
+    },
+    avatarContainer: {
+      marginVertical: 20,
+      alignItems: 'center',
+    },
+    form: {
+      marginHorizontal: 20,
+      padding: 10,
+      gap: 20,
+    },
+    editFieldContainer: {
+      backgroundColor: isDark ? '#2d2d2d' : '#fff',
+      borderRadius: 12,
+      padding: 12,
+      elevation: 3,
+    },
+    editFieldContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    editInput: {
+      flex: 1,
+      marginLeft: 10,
+      fontSize: 16,
+      color: isDark ? '#fff' : '#000',
+    },
+    saveButton: {
+      backgroundColor: '#3B4CCA',
+      padding: 14,
+      borderRadius: 12,
+      alignItems: 'center',
+    },
+    saveButtonText: {
+      color: '#fff',
+      fontWeight: 'bold',
+      fontSize: 16,
+    },
+    logout: {
+      alignItems: 'center',
+      marginTop: 30,
+    },
+    logoutText: {
+      marginTop: 5,
+      fontSize: 14,
+      fontWeight: 'bold',
+      color: isDark ? '#fff' : '#000',
+    },
+  });

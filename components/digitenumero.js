@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import {View,
+import React, { useState, useEffect } from 'react';
+import {
+  View,
   Text,
   TextInput,
   StyleSheet,
@@ -8,6 +9,7 @@ import {View,
   Keyboard,
   TouchableWithoutFeedback,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const numerosBraille = {
   '0': 14,
@@ -25,6 +27,17 @@ const numerosBraille = {
 
 export default function NumBraille() {
   const [num, setNum] = useState('');
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const carregarTema = async () => {
+      const temaSalvo = await AsyncStorage.getItem('darkTheme');
+      if (temaSalvo !== null) {
+        setIsDark(temaSalvo === 'true');
+      }
+    };
+    carregarTema();
+  }, []);
 
   const numBraille = num.trim().toLowerCase().split('');
 
@@ -38,6 +51,8 @@ export default function NumBraille() {
   const cellWidth = Math.max(Math.min((screenWidth - (spacing * (numColumns + 1))) / numColumns, maxCellWidth), minCelWidth);
   const circleSize = cellWidth / 3;
 
+  const styles = getStyles(isDark, circleSize, cellWidth);
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.outerContainer}>
@@ -49,7 +64,7 @@ export default function NumBraille() {
           value={num}
           onChangeText={setNum}
           placeholder="Digite aqui..."
-          placeholderTextColor="#dfe4b7"
+          placeholderTextColor={isDark ? '#888' : '#dfe4b7'}
           returnKeyType="done"
         />
 
@@ -73,19 +88,19 @@ export default function NumBraille() {
               ];
 
               return (
-                <View key={index} style={[styles.cela, { width: cellWidth }]}>
+                <View key={index} style={styles.cela}>
                   <View style={styles.celaBox}>
                     <View style={styles.row}>
-                      <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }, points[0] && styles.filled]} />
-                      <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }, points[1] && styles.filled]} />
+                      <View style={[styles.circle, points[0] && styles.filled]} />
+                      <View style={[styles.circle, points[1] && styles.filled]} />
                     </View>
                     <View style={styles.row}>
-                      <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }, points[2] && styles.filled]} />
-                      <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }, points[3] && styles.filled]} />
+                      <View style={[styles.circle, points[2] && styles.filled]} />
+                      <View style={[styles.circle, points[3] && styles.filled]} />
                     </View>
                     <View style={styles.row}>
-                      <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }, points[4] && styles.filled]} />
-                      <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }, points[5] && styles.filled]} />
+                      <View style={[styles.circle, points[4] && styles.filled]} />
+                      <View style={[styles.circle, points[5] && styles.filled]} />
                     </View>
                   </View>
                   <Text style={styles.num}>{numB}</Text>
@@ -99,10 +114,11 @@ export default function NumBraille() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (isDark, circleSize, cellWidth) =>
+  StyleSheet.create({
     outerContainer: {
       flex: 1,
-      backgroundColor: '#a9c2e7', // azul mais suave e neutro
+      backgroundColor: isDark ? '#121212' : '#a9c2e7',
       paddingTop: 50,
       paddingHorizontal: 20,
     },
@@ -111,11 +127,11 @@ const styles = StyleSheet.create({
       fontWeight: '600',
       marginBottom: 25,
       textAlign: 'center',
-      color: '#333', // texto mais suave
+      color: isDark ? '#eee' : '#333',
     },
     input: {
-      backgroundColor: '#fff',
-      color: '#000',
+      backgroundColor: isDark ? '#2d2d2d' : '#fff',
+      color: isDark ? '#fff' : '#000',
       width: '100%',
       padding: 15,
       borderRadius: 30,
@@ -123,8 +139,7 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       marginBottom: 30,
       borderWidth: 1,
-      borderColor: '#ccc', // cor suave para a borda
-    
+      borderColor: isDark ? '#555' : '#ccc',
     },
     brailleContainer: {
       paddingBottom: 50,
@@ -138,15 +153,15 @@ const styles = StyleSheet.create({
     },
     cela: {
       height: 130,
+      width: cellWidth,
       margin: 5,
       alignItems: 'center',
       justifyContent: 'center',
     },
-    // celaBox permanece como está
     celaBox: {
-      backgroundColor: '#dfe4b7',
+      backgroundColor: isDark ? '#2d2d2d' : '#dfe4b7',
       borderWidth: 2,
-      borderColor: '#000',
+      borderColor: isDark ? '#fff' : '#000',
       borderRadius: 10,
       padding: 12,
       margin: 5,
@@ -157,17 +172,21 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
     },
     circle: {
+      width: circleSize,
+      height: circleSize,
+      borderRadius: circleSize / 2,
       borderWidth: 1,
       borderColor: '#000',
       margin: 3,
+      backgroundColor: isDark ? '#555' : '#fff',
     },
     filled: {
-      backgroundColor: '#000',
+      backgroundColor: isDark ? 'rgb(223, 228, 183)' : '#000',
     },
     num: {
       marginTop: 8,
       fontSize: 18,
-      color: '#333',
+      color: isDark ? '#fff' : '#333',
       textAlign: 'center',
       fontWeight: '600',
     },

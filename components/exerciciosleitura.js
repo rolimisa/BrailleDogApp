@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, Modal, SafeAreaView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Dimensions,
+  Modal,
+  SafeAreaView,
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { palavras, alfBraille } from '../src/palavras';
 import { salvarScore, carregarScore, salvarPalavrasAcertadas, carregarPalavrasAcertadas } from '../src/database';
 
 export default function ExercicioBraille() {
+  const [isDark, setIsDark] = useState(false);
   const [palavra, setPalavra] = useState('');
   const [indiceFaltando, setIndiceFaltando] = useState(null);
   const [palavraFaltante, setPalavraFaltante] = useState('');
@@ -17,6 +28,14 @@ export default function ExercicioBraille() {
   const [dicasUsadas, setDicasUsadas] = useState(0);
 
   useEffect(() => {
+    const carregarTema = async () => {
+      const temaSalvo = await AsyncStorage.getItem('darkTheme');
+      if (temaSalvo !== null) {
+        setIsDark(temaSalvo === 'true');
+      }
+    };
+    carregarTema();
+
     async function carregarDados() {
       const scoreSalvo = await carregarScore() || 0;
       const palavrasSalvas = await carregarPalavrasAcertadas() || [];
@@ -26,6 +45,8 @@ export default function ExercicioBraille() {
     }
     carregarDados();
   }, []);
+
+  const styles = getStyles(isDark);
 
   const sortearPalavra = (palavrasJaAcertadas = []) => {
     const disponiveis = palavras.filter(p => !palavrasJaAcertadas.includes(p));
@@ -55,15 +76,6 @@ export default function ExercicioBraille() {
     setPalavraFaltante(faltante);
     setRespostaUsuario('');
   };
-
-  const plvrBraille = palavra ? palavra.trim().toLowerCase().split('') : [];
-  const screenWidth = Dimensions.get('window').width;
-  const numColumns = Math.min(5, plvrBraille.length);
-  const spacing = 15;
-
-  const maxCellWidth = 100;
-  const cellWidth = Math.min((screenWidth - (spacing * (numColumns + 1))) / numColumns, maxCellWidth);
-  const circleSize = cellWidth / 3;
 
   const verificarResposta = async () => {
     if (!palavra || indiceFaltando === null) return;
@@ -112,10 +124,18 @@ export default function ExercicioBraille() {
     }
   };
 
+  const plvrBraille = palavra ? palavra.trim().toLowerCase().split('') : [];
+  const screenWidth = Dimensions.get('window').width;
+  const numColumns = Math.min(5, plvrBraille.length);
+  const spacing = 15;
+  const maxCellWidth = 100;
+  const cellWidth = Math.min((screenWidth - (spacing * (numColumns + 1))) / numColumns, maxCellWidth);
+  const circleSize = cellWidth / 3;
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? '#121212' : '#a9c2e7' }}>
       <View style={styles.container}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.dicaButton}
           onPress={darDica}
           disabled={dicasUsadas > 0 || !palavra}
@@ -136,14 +156,14 @@ export default function ExercicioBraille() {
           value={respostaUsuario}
           onChangeText={setRespostaUsuario}
           placeholder="Digite a letra faltante"
-          placeholderTextColor="#888"
+          placeholderTextColor={isDark ? '#aaa' : '#888'}
           maxLength={1}
           autoCapitalize="none"
           autoFocus
         />
 
-        <TouchableOpacity 
-          onPress={verificarResposta} 
+        <TouchableOpacity
+          onPress={verificarResposta}
           style={styles.botao}
           disabled={!respostaUsuario}
         >
@@ -163,26 +183,24 @@ export default function ExercicioBraille() {
             ];
 
             return (
-              <View
-                key={index}
-                style={[
-                  styles.cela,
-                  { width: cellWidth },
-                ]}
-              >
+              <View key={index} style={[styles.cela, { width: cellWidth }]}>
                 <View style={styles.celaBox}>
-                  <View style={styles.row}>
-                    <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }, points[0] && styles.filled]} />
-                    <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }, points[1] && styles.filled]} />
-                  </View>
-                  <View style={styles.row}>
-                    <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }, points[2] && styles.filled]} />
-                    <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }, points[3] && styles.filled]} />
-                  </View>
-                  <View style={styles.row}>
-                    <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }, points[4] && styles.filled]} />
-                    <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }, points[5] && styles.filled]} />
-                  </View>
+                  {[0, 2, 4].map((row) => (
+                    <View style={styles.row} key={row}>
+                      <View style={[
+                        styles.circle,
+                        { width: circleSize, height: circleSize, borderRadius: circleSize / 2 },
+                        points[row] && styles.filled,
+                        !points[row] && isDark && styles.circleDark
+                      ]} />
+                      <View style={[
+                        styles.circle,
+                        { width: circleSize, height: circleSize, borderRadius: circleSize / 2 },
+                        points[row + 1] && styles.filled,
+                        !points[row + 1] && isDark && styles.circleDark
+                      ]} />
+                    </View>
+                  ))}
                 </View>
                 <Text style={styles.plvLabel}>
                   {index === indiceFaltando ? '' : plvB}
@@ -218,10 +236,9 @@ export default function ExercicioBraille() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (isDark) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#a9c2e7',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 20,
@@ -242,7 +259,7 @@ const styles = StyleSheet.create({
   scoreBar: {
     height: 30,
     width: '100%',
-    backgroundColor: '#e0e0e0',
+    backgroundColor: isDark ? '#333' : '#e0e0e0',
     borderRadius: 15,
     marginBottom: 20,
     overflow: 'hidden',
@@ -264,31 +281,28 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     marginBottom: 10,
-    color: '#333',
+    color: isDark ? '#fff' : '#333',
     textAlign: 'center',
   },
   palavraFaltante: {
     fontSize: 38,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: '#222',
+    color: isDark ? '#fff' : '#222',
     letterSpacing: 3,
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: isDark ? '#2d2d2d' : '#fff',
+    color: isDark ? '#fff' : '#000',
     width: '80%',
     height: 50,
     borderRadius: 25,
     paddingHorizontal: 20,
     fontSize: 20,
     textAlign: 'center',
-    borderColor: '#ccc',
+    borderColor: isDark ? '#555' : '#ccc',
     borderWidth: 1,
     elevation: 3,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
     marginBottom: 25,
   },
   botao: {
@@ -318,9 +332,9 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   celaBox: {
-    backgroundColor: '#dfe4b7',
+    backgroundColor: isDark ? '#2d2d2d' : '#dfe4b7',
     borderWidth: 2,
-    borderColor: '#333',
+    borderColor: isDark ? '#fff' : '#333',
     borderRadius: 10,
     padding: 12,
     margin: 5,
@@ -335,13 +349,16 @@ const styles = StyleSheet.create({
     borderColor: '#555',
     margin: 2,
   },
+  circleDark: {
+    backgroundColor: '#444',
+  },
   filled: {
-    backgroundColor: '#000',
+    backgroundColor: isDark ? 'rgb(223, 228, 183)' : '#000',
   },
   plvLabel: {
     marginTop: 5,
     fontSize: 24,
-    color: '#222',
+    color: isDark ? '#fff' : '#222',
     fontWeight: '600',
     textAlign: 'center',
   },

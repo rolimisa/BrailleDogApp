@@ -1,9 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {View,Text,Switch,StyleSheet,StatusBar} from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ConfiguraAcessibilidade = () => {
   const [temaEscuro, setTemaEscuro] = useState(false);
+
+  useEffect(() => {
+    const carregarTema = async () => {
+      const temaSalvo = await AsyncStorage.getItem('darkTheme');
+      if (temaSalvo !== null) {
+        setTemaEscuro(temaSalvo === 'true');
+      }
+    };
+    carregarTema();
+  }, []);
+
+  const handleTheme = async () => {
+    const novoTema = !temaEscuro;
+    setTemaEscuro(novoTema);
+    await AsyncStorage.setItem('darkTheme', novoTema.toString());
+  };
+
+  const styles = getStyles(temaEscuro);
 
   return (
     <View style={styles.container}>
@@ -18,8 +37,8 @@ const ConfiguraAcessibilidade = () => {
             </Text>
           </View>
           <Switch
-            value={temaEscuro}
-            onValueChange={setTemaEscuro}
+            value={temaEscuro}          
+            onValueChange={handleTheme}
             trackColor={{ true: '#3B4CCA', false: '#ccc' }}
           />
         </View>
@@ -30,38 +49,35 @@ const ConfiguraAcessibilidade = () => {
 
 export default ConfiguraAcessibilidade;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#a9c2e7',
-    padding: 10,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  box: {
-    backgroundColor: '#D6EAF8',
-    borderRadius: 20,
-    padding: 15,
-    marginBottom: 15,
-    elevation: 2,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    flex: 1,
-  },
-  desc: {
-    fontSize: 14,
-    color: '#333',
-    marginTop: 5,
-  },
-  previewText: {
-    marginTop: 10,
-    textAlign: 'center',
-  },
-});
+const getStyles = (isDarkMode) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: isDarkMode ? '#1c1c1c' : '#a9c2e7',
+      padding: 10,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    box: {
+      backgroundColor: isDarkMode ? '#333' : '#D6EAF8',
+      borderRadius: 20,
+      padding: 15,
+      marginBottom: 15,
+      elevation: 2,
+    },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+    },
+    label: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: isDarkMode ? '#fff' : '#000',
+    },
+    desc: {
+      fontSize: 14,
+      color: isDarkMode ? '#ccc' : '#333',
+      marginTop: 5,
+    },
+  });

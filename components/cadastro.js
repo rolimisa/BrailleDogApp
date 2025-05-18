@@ -27,18 +27,6 @@ export default function Cadastrar({ navigation }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    if (errorMessage) {
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true
-      }).start();
-    } else {
-      fadeAnim.setValue(0);
-    }
-  }, [errorMessage]);
-
-  useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
       () => setKeyboardStatus(true)
