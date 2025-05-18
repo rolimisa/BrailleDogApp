@@ -5,10 +5,6 @@ const EditarPerfil = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#3B4CCA" />
-      <View style={styles.header}>
-        <Text style={styles.headerText}>EDITAR DE PERFIL</Text>
-      </View>
-
       <View style={styles.content}>
         <TouchableOpacity
           style={styles.circleButton}
@@ -33,18 +29,7 @@ export default EditarPerfil;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ADD8E6', // azul claro
-  },
-  header: {
-    backgroundColor: '#3B4CCA', // azul escuro
-    padding: 20,
-    alignItems: 'center',
-  },
-  headerText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    letterSpacing: 1,
+    backgroundColor: '#a9c2e7', // azul claro
   },
   content: {
     flex: 1,

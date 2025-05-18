@@ -32,7 +32,6 @@ export default function AlfabetoBrailleAnimado() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#a9c2e7' }}>
     <View style={styles.container}>
-      <Text style={styles.headerText}>ALFABETO BRAIILE</Text>
       <FlatList
          key="3cols" 
          data={alfabeto}
@@ -72,16 +71,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#a9c2e7',
-  },
-  headerText: {
-    backgroundColor: '#3f51b5',
-    textAlign: 'center',
-    fontSize: 34,
-    fontWeight: 'bold',
-    marginBottom: 3,
-    backgroundColor:'#dfe4b7', 
-    borderRadius:8,
-    paddingVertical: 15
   },
   grid: {
     alignItems: 'center',

@@ -1,228 +1,387 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, Modal, SafeAreaView } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { palavras, alfBraille } from '../src/palavras';
+import { salvarScore, carregarScore, salvarPalavrasAcertadas, carregarPalavrasAcertadas } from '../src/database';
 
-// Lista de palavras
-const palavrasOriginais = [
-  "Casa", "Porta", "Janela", "Cama", "Mesa", "Cadeira", "Telefone", "Chave", "Roupa", "Sapato",
-  "Pão", "Leite", "Arroz", "Feijão", "Ovo", "Água", "Fruta", "Maçã", "Banana", "Uva",
-  "Mãe", "Pai", "Irmão", "Irmã", "Avó", "Avô", "Amigo", "Criança", "Bebê", "Professor",
-  "Cachorro", "Gato", "Pássaro", "Peixe", "Cavalo", "Vaca", "Leão", "Elefante", "Macaco", "Coelho",
-  "Azul", "Vermelho", "Verde", "Amarelo", "Preto", "Branco", "Laranja", "Roxo", "Marrom", "Cinza",
-  "Um", "Dois", "Três", "Quatro", "Cinco", "Seis", "Sete", "Oito", "Nove", "Dez",
-  "Hoje", "Amanhã", "Ontem", "Manhã", "Tarde", "Noite", "Segunda", "Terça", "Quarta", "Quinta",
-  "Escola", "Rua", "Praça", "Hospital", "Igreja", "Mercado", "Parque", "Biblioteca", "Estação", "Ponto",
-  "Feliz", "Triste", "Bravo", "Medo", "Amor", "Cansaço", "Calma", "Raiva", "Alegria", "Esperança",
-  "Sol", "Lua", "Estrela", "Livro", "Caneta", "Papel", "Computador", "Bola", "Música", "Som"
-];
-
-const ExercicioLeitura = ({ navigation }) => {
-  const [index, setIndex] = useState(0);
-  const [palavraComLacuna, setPalavraComLacuna] = useState('');
-  const [letraCorreta, setLetraCorreta] = useState('');
-  const [input, setInput] = useState('');
-  const [pontos, setPontos] = useState(0);
-
-  const letras = ['A', 'E', 'I', 'O', 'U', 'M', 'P', 'R', 'L', 'S', 'T', 'B', 'C', 'D', 'N'];
-
-  // Preparar a palavra para mostrar (com lacuna aleatória)
-  const prepararPalavra = () => {
-    const palavra = palavrasOriginais[index].toUpperCase();
-    if (palavra.length > 1) {
-      const posicao = Math.floor(Math.random() * palavra.length);
-      const letra = palavra[posicao];
-      const palavraComEspaco = palavra.substring(0, posicao) + '_' + palavra.substring(posicao + 1);
-      setPalavraComLacuna(palavraComEspaco);
-      setLetraCorreta(letra);
-    } else {
-      // Se a palavra for de 1 letra só (raro), não modifica
-      setPalavraComLacuna(palavra);
-      setLetraCorreta('');
-    }
-  };
+export default function ExercicioBraille() {
+  const [palavra, setPalavra] = useState('');
+  const [indiceFaltando, setIndiceFaltando] = useState(null);
+  const [palavraFaltante, setPalavraFaltante] = useState('');
+  const [respostaUsuario, setRespostaUsuario] = useState('');
+  const [score, setScore] = useState(0);
+  const [palavrasAcertadas, setPalavrasAcertadas] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalType, setModalType] = useState('');
+  const [dicasUsadas, setDicasUsadas] = useState(0);
 
   useEffect(() => {
-    prepararPalavra();
-  }, [index]);
+    async function carregarDados() {
+      const scoreSalvo = await carregarScore() || 0;
+      const palavrasSalvas = await carregarPalavrasAcertadas() || [];
+      setScore(scoreSalvo);
+      setPalavrasAcertadas(palavrasSalvas);
+      sortearPalavra(palavrasSalvas);
+    }
+    carregarDados();
+  }, []);
 
-  const handlePress = (letra) => {
-    setInput(letra);
+  const sortearPalavra = (palavrasJaAcertadas = []) => {
+    const disponiveis = palavras.filter(p => !palavrasJaAcertadas.includes(p));
+
+    if (disponiveis.length === 0) {
+      setModalMessage('Parabéns! Você completou todas as 300 palavras! 🎉');
+      setModalType('success');
+      setModalVisible(true);
+      setPalavra('');
+      setIndiceFaltando(null);
+      setPalavraFaltante('');
+      return;
+    }
+
+    const sorteada = disponiveis[Math.floor(Math.random() * disponiveis.length)];
+    const indice = Math.floor(Math.random() * sorteada.length);
+
+    setPalavra(sorteada);
+    setIndiceFaltando(indice);
+    setDicasUsadas(0);
+
+    const faltante = sorteada
+      .split('')
+      .map((l, i) => (i === indice ? '_' : l))
+      .join('');
+
+    setPalavraFaltante(faltante);
+    setRespostaUsuario('');
   };
 
-  const proximaPalavra = () => {
-    if (index < palavrasOriginais.length - 1) {
-      setIndex(index + 1);
-      setInput('');
+  const plvrBraille = palavra ? palavra.trim().toLowerCase().split('') : [];
+  const screenWidth = Dimensions.get('window').width;
+  const numColumns = Math.min(5, plvrBraille.length);
+  const spacing = 15;
+
+  const maxCellWidth = 100;
+  const cellWidth = Math.min((screenWidth - (spacing * (numColumns + 1))) / numColumns, maxCellWidth);
+  const circleSize = cellWidth / 3;
+
+  const verificarResposta = async () => {
+    if (!palavra || indiceFaltando === null) return;
+
+    if (respostaUsuario.trim().toLowerCase() === palavra[indiceFaltando]?.toLowerCase()) {
+      const pontos = dicasUsadas > 0 ? 0.5 : 1;
+      setModalMessage(dicasUsadas > 0 ? 'Acertou! (+0.5 ponto)' : 'Acertou! (+1 ponto) 🎉');
+      setModalType('success');
+
+      if (!palavrasAcertadas.includes(palavra)) {
+        const novaLista = [...palavrasAcertadas, palavra];
+        await salvarPalavrasAcertadas(novaLista);
+        setPalavrasAcertadas(novaLista);
+
+        const novoScore = score + pontos;
+        await salvarScore(novoScore);
+        setScore(novoScore);
+      }
     } else {
-      alert(`Fim dos exercícios! 🏆\nPontuação final: ${pontos}/${palavrasOriginais.length}`);
-      navigation.goBack();
+      setModalMessage('Errou! Tente novamente');
+      setModalType('error');
+    }
+    setModalVisible(true);
+  };
+
+  const darDica = () => {
+    if (dicasUsadas < 1 && palavra && indiceFaltando !== null) {
+      setRespostaUsuario(palavra[indiceFaltando].toLowerCase());
+      setDicasUsadas(1);
     }
   };
 
-  const handleOk = () => {
-    if (input.toUpperCase() === letraCorreta.toUpperCase()) {
-      alert('✅ Correto!');
-      setPontos(pontos + 1);
-      proximaPalavra();
-    } else {
-      alert('❌ Errado! Tente de novo!');
-      setInput('');
-    }
+  const handleCompleteModalClose = async () => {
+    setModalVisible(false);
+    setPalavrasAcertadas([]);
+    setScore(0);
+    await salvarPalavrasAcertadas([]);
+    await salvarScore(0);
+    sortearPalavra([]);
   };
 
-  const handlePular = () => {
-    proximaPalavra();
+  const closeModal = () => {
+    setModalVisible(false);
+    if (modalType === 'success' && modalMessage !== 'Parabéns! Você completou todas as 300 palavras! 🎉') {
+      sortearPalavra(palavrasAcertadas);
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backText}>◀ Back</Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <TouchableOpacity 
+          style={styles.dicaButton}
+          onPress={darDica}
+          disabled={dicasUsadas > 0 || !palavra}
+        >
+          <Icon name="lightbulb-on-outline" size={24} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.headerText}>EXERCÍCIOS DE LEITURA</Text>
+
+        <View style={styles.scoreBar}>
+          <View style={[styles.scoreFill, { width: `${(score / 300) * 100}%` }]} />
+          <Text style={styles.scoreText}>{score.toFixed(1)}/300</Text>
+        </View>
+
+        <Text style={styles.title}>Complete a palavra:</Text>
+        <Text style={styles.palavraFaltante}>{palavraFaltante || '–'}</Text>
+
+        <TextInput
+          style={styles.input}
+          value={respostaUsuario}
+          onChangeText={setRespostaUsuario}
+          placeholder="Digite a letra faltante"
+          placeholderTextColor="#888"
+          maxLength={1}
+          autoCapitalize="none"
+          autoFocus
+        />
+
+        <TouchableOpacity 
+          onPress={verificarResposta} 
+          style={styles.botao}
+          disabled={!respostaUsuario}
+        >
+          <Text style={styles.botaoTexto}>Verificar</Text>
+        </TouchableOpacity>
+
+        <View style={[styles.brailleContainer, { gap: spacing }]}>
+          {plvrBraille.map((plvB, index) => {
+            const brailleValue = alfBraille[plvB] || 0;
+            const points = [
+              (brailleValue & 1) !== 0,
+              (brailleValue & 2) !== 0,
+              (brailleValue & 4) !== 0,
+              (brailleValue & 8) !== 0,
+              (brailleValue & 16) !== 0,
+              (brailleValue & 32) !== 0,
+            ];
+
+            return (
+              <View
+                key={index}
+                style={[
+                  styles.cela,
+                  { width: cellWidth },
+                ]}
+              >
+                <View style={styles.celaBox}>
+                  <View style={styles.row}>
+                    <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }, points[0] && styles.filled]} />
+                    <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }, points[1] && styles.filled]} />
+                  </View>
+                  <View style={styles.row}>
+                    <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }, points[2] && styles.filled]} />
+                    <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }, points[3] && styles.filled]} />
+                  </View>
+                  <View style={styles.row}>
+                    <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }, points[4] && styles.filled]} />
+                    <View style={[styles.circle, { width: circleSize, height: circleSize, borderRadius: circleSize / 2 }, points[5] && styles.filled]} />
+                  </View>
+                </View>
+                <Text style={styles.plvLabel}>
+                  {index === indiceFaltando ? '' : plvB}
+                </Text>
+              </View>
+            );
+          })}
+        </View>
+
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={modalMessage.includes('300 palavras') ? handleCompleteModalClose : closeModal}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={[
+              styles.modalContainer,
+              modalType === 'success' ? styles.modalSuccess : styles.modalError
+            ]}>
+              <Text style={styles.modalText}>{modalMessage}</Text>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={modalMessage.includes('300 palavras') ? handleCompleteModalClose : closeModal}
+              >
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </View>
-
-      {/* Progresso */}
-      <Text style={styles.progressText}>
-        Exercício {index + 1} de {palavrasOriginais.length}
-      </Text>
-
-      {/* Pontuação */}
-      <Text style={styles.scoreText}>
-        Pontos: {pontos}
-      </Text>
-
-      {/* Letras para clicar */}
-      <View style={styles.circleContainer}>
-        {letras.map((letra, i) => (
-          <TouchableOpacity
-            key={i}
-            style={styles.circleButton}
-            onPress={() => handlePress(letra)}
-          >
-            <Text style={styles.circleText}>{letra}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* Palavra da imagem */}
-      <Text style={styles.palavraImagem}>PALAVRA DA IMAGEM</Text>
-      <Text style={styles.palavraBase}>{palavraComLacuna}</Text>
-
-      {/* Input bloqueado */}
-      <Text style={styles.label}>LETRA ESCOLHIDA</Text>
-      <TextInput
-        style={styles.input}
-        value={input}
-        placeholder="Clique nas letras"
-        editable={false}
-      />
-
-      {/* Botões */}
-      <TouchableOpacity style={styles.button} onPress={handleOk}>
-        <Text style={styles.buttonText}>OK</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={handlePular}>
-        <Text style={styles.buttonText}>PULAR</Text>
-      </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ADD8E6',
+    backgroundColor: '#a9c2e7',
     alignItems: 'center',
-    paddingTop: 40,
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
-  header: {
-    flexDirection: 'row',
+  dicaButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    backgroundColor: '#4a4aa3',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#5D6D7E',
+    elevation: 3,
+    zIndex: 1,
+  },
+  scoreBar: {
+    height: 30,
     width: '100%',
-    padding: 15,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 15,
+    marginBottom: 20,
+    overflow: 'hidden',
+    position: 'relative',
   },
-  backText: {
-    color: 'white',
-    fontSize: 16,
-    marginRight: 10,
-  },
-  headerText: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  progressText: {
-    marginTop: 10,
-    fontSize: 18,
-    fontWeight: 'bold',
+  scoreFill: {
+    height: '100%',
+    backgroundColor: '#4a4aa3',
+    borderRadius: 15,
   },
   scoreText: {
-    marginTop: 5,
-    fontSize: 16,
-    fontWeight: '600',
+    position: 'absolute',
+    alignSelf: 'center',
+    top: 5,
+    color: '#fff',
+    fontWeight: 'bold',
   },
-  circleContainer: {
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    marginBottom: 10,
+    color: '#333',
+    textAlign: 'center',
+  },
+  palavraFaltante: {
+    fontSize: 38,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#222',
+    letterSpacing: 3,
+  },
+  input: {
+    backgroundColor: '#fff',
+    width: '80%',
+    height: 50,
+    borderRadius: 25,
+    paddingHorizontal: 20,
+    fontSize: 20,
+    textAlign: 'center',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    marginBottom: 25,
+  },
+  botao: {
+    backgroundColor: '#4a4aa3',
+    borderRadius: 30,
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    elevation: 4,
+    marginTop: 15,
+  },
+  botaoTexto: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  brailleContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    marginVertical: 20,
-    gap: 20,
+    alignItems: 'center',
+    marginTop: 15,
   },
-  circleButton: {
-    backgroundColor: '#DDE2B6',
-    borderRadius: 50,
-    width: 60,
-    height: 60,
+  cela: {
+    height: 130,
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  celaBox: {
+    backgroundColor: '#dfe4b7',
+    borderWidth: 2,
+    borderColor: '#333',
+    borderRadius: 10,
+    padding: 12,
+    margin: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  circle: {
+    borderWidth: 1,
+    borderColor: '#555',
+    margin: 2,
+  },
+  filled: {
+    backgroundColor: '#000',
+  },
+  plvLabel: {
+    marginTop: 5,
+    fontSize: 24,
+    color: '#222',
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  modalOverlay: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 10,
-    elevation: 3,
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
-  circleText: {
-    fontSize: 22,
-    fontWeight: 'bold',
-  },
-  palavraImagem: {
-    fontSize: 20,
-    marginTop: 10,
-    fontWeight: 'bold',
-  },
-  palavraBase: {
-    fontSize: 28,
-    marginVertical: 10,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  label: {
-    fontSize: 16,
-    marginTop: 20,
-  },
-  input: {
-    width: '60%',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    backgroundColor: '#fff',
-    padding: 10,
-    marginVertical: 10,
-    borderRadius: 10,
-    textAlign: 'center',
-  },
-  button: {
-    backgroundColor: '#5D6D7E',
-    padding: 15,
-    borderRadius: 25,
-    width: '60%',
+  modalContainer: {
+    width: '80%',
+    padding: 20,
+    borderRadius: 15,
     alignItems: 'center',
-    marginVertical: 5,
   },
-  buttonText: {
-    color: 'white',
+  modalSuccess: {
+    backgroundColor: '#e8f5e9',
+    borderColor: '#4CAF50',
+    borderWidth: 2,
+  },
+  modalError: {
+    backgroundColor: '#ffebee',
+    borderColor: '#f44336',
+    borderWidth: 2,
+  },
+  modalText: {
+    fontSize: 20,
+    marginBottom: 20,
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+  modalButton: {
+    backgroundColor: '#4a4aa3',
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+  },
+  modalButtonText: {
+    color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
-  }
+  },
 });
-
-export default ExercicioLeitura;

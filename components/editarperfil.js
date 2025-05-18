@@ -24,7 +24,7 @@ export default function PerfilScreen({ navigation }) {
           return;
         }
 
-        // Pega os dados do usuário com o token (opcional)
+      
         const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_API_KEY}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

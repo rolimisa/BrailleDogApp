@@ -16,15 +16,12 @@ A iniciativa é das desenvolvedoras Ana Isabelly Soncim Venancio e Isabella Roli
 O aplicativo nasceu do desejo de quebrar barreiras de comunicação e aproximar o conhecimento de forma acessível a todos, contribuindo para um mundo mais justoe empático.`;
 
   return (
-    <ScrollView style={styles.scrollArea} contentContainerStyle={styles.scrollContent}>
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#3B4CCA" />
-      <View style={styles.header}>
-        <Text style={styles.headerText}>SOBRE O APLICATIVO</Text>
-      </View>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.texto}>{conteudo}</Text>
+      </ScrollView>
     </View>
-    </ScrollView>
   );
 };
 
@@ -33,7 +30,7 @@ export default SobreScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ADD8E6',
+    backgroundColor: '#a9c2e7',
   },
   header: {
     backgroundColor: '#3B4CCA',
@@ -46,15 +43,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 1,
   },
-  scrollArea: {
-    flex: 1,
-    margin: 10,
-    backgroundColor: '#D6EAF8',
-    borderRadius: 15,
-    padding: 15,
-  },
   scrollContent: {
-    paddingBottom: 40,
+    padding: 15,
   },
   texto: {
     fontSize: 18,

@@ -1,5 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Animated ,Image } from 'react-native';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  StyleSheet, 
+  Alert, 
+  Animated, 
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
+  ScrollView
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FIREBASE_API_KEY } from '@env';
@@ -9,18 +23,8 @@ export default function Cadastrar({ navigation }) {
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [keyboardStatus, setKeyboardStatus] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
-
-  const getFirebaseErrorMessage = (errorCode) => {
-    const errorMessages = {
-      "EMAIL_EXISTS": "Este e-mail já está cadastrado",
-      "INVALID_EMAIL": "E-mail inválido",
-      "auth/invalid-password": "Senha fraca (mínimo 6 caracteres)",
-      "DEFAULT": "Ocorreu um erro. Tente novamente mais tarde."
-    };
-    const code = errorCode.replace('auth/', '');
-    return errorMessages[code] || errorMessages.DEFAULT;
-  };
 
   useEffect(() => {
     if (errorMessage) {
@@ -33,6 +37,33 @@ export default function Cadastrar({ navigation }) {
       fadeAnim.setValue(0);
     }
   }, [errorMessage]);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      () => setKeyboardStatus(true)
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => setKeyboardStatus(false)
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
+  const getFirebaseErrorMessage = (errorCode) => {
+    const errorMessages = {
+      "EMAIL_EXISTS": "Este e-mail já está cadastrado",
+      "INVALID_EMAIL": "E-mail inválido",
+      "auth/invalid-password": "Senha fraca (mínimo 6 caracteres)",
+      "DEFAULT": "Ocorreu um erro. Tente novamente mais tarde."
+    };
+    const code = errorCode.replace('auth/', '');
+    return errorMessages[code] || errorMessages.DEFAULT;
+  };
 
   const handleCadastro = async () => {
     setErrorMessage('');
@@ -70,61 +101,74 @@ export default function Cadastrar({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Image 
-        source={require('./img/logo.png')} // ajusta o caminho se precisar
-        style={styles.logo}
-        resizeMode="contain"
-      />
-      <Text style={styles.title}>BrailleDog</Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView 
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={[styles.contentContainer, keyboardStatus && styles.keyboardActive]}>
+            <Image 
+              source={require('./img/logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <Text style={styles.title}>BrailleDog</Text>
 
-      {errorMessage ? (
-        <Animated.View style={[styles.errorContainer, { opacity: fadeAnim }]}>
-          <Icon name="alert-circle" size={16} color="#d32f2f" />
-          <Text style={styles.errorText}> {errorMessage}</Text>
-        </Animated.View>
-      ) : null}
+            {errorMessage ? (
+              <Animated.View style={[styles.errorContainer, { opacity: fadeAnim }]}>
+                <Icon name="alert-circle" size={16} color="#d32f2f" />
+                <Text style={styles.errorText}> {errorMessage}</Text>
+              </Animated.View>
+            ) : null}
 
-      <View style={styles.inputContainer}>
-        <Icon name="email" size={22} color="#666" style={styles.icon} />
-        <TextInput 
-          placeholder="E-mail"
-          placeholderTextColor="#999"
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-      </View>
+            <View style={styles.inputContainer}>
+              <Icon name="email" size={22} color="#666" style={styles.icon} />
+              <TextInput 
+                placeholder="E-mail"
+                placeholderTextColor="#999"
+                style={styles.input}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
 
-      <View style={styles.inputContainer}>
-        <Icon name="lock" size={22} color="#666" style={styles.icon} />
-        <TextInput 
-          placeholder="Senha (mínimo 06 caracteres)"
-          placeholderTextColor="#999"
-          style={styles.input}
-          secureTextEntry={!passwordVisible}
-          value={password}
-          onChangeText={setPassword}
-        />
-        <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
-          <Icon name={passwordVisible ? "eye-off" : "eye"} size={22} color="#666" />
-        </TouchableOpacity>
-      </View>
+            <View style={styles.inputContainer}>
+              <Icon name="lock" size={22} color="#666" style={styles.icon} />
+              <TextInput 
+                placeholder="Senha (mínimo 06 caracteres)"
+                placeholderTextColor="#999"
+                style={styles.input}
+                secureTextEntry={!passwordVisible}
+                value={password}
+                onChangeText={setPassword}
+              />
+              <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
+                <Icon name={passwordVisible ? "eye-off" : "eye"} size={22} color="#666" />
+              </TouchableOpacity>
+            </View>
 
-      <TouchableOpacity 
-        style={styles.button} 
-        onPress={handleCadastro}
-        disabled={email.trim() === '' || password.trim() === ''}
-      >
-        <Text style={styles.buttonText}>Cadastrar</Text>
-      </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.button} 
+              onPress={handleCadastro}
+              disabled={email.trim() === '' || password.trim() === ''}
+            >
+              <Text style={styles.buttonText}>Cadastrar</Text>
+            </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-        <Text style={styles.registerText}>Já tem uma conta? Faça login</Text>
-      </TouchableOpacity>
-    </View>
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+              <Text style={styles.registerText}>Já tem uma conta? Faça login</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -132,9 +176,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#a9c2e7',
-    alignItems: 'center',
+  },
+  scrollContainer: {
+    flexGrow: 1,
     justifyContent: 'center',
+  },
+  contentContainer: {
     padding: 20,
+    alignItems: 'center',
+  },
+  keyboardActive: {
+    paddingTop: 20,
   },
   logo: {
     width: 200,

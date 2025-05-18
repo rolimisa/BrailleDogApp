@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { FIREBASE_API_KEY } from '@env';
 
 export default function EsqueciSenha({ navigation }) {
   const [email, setEmail] = useState('');
   const [mensagem, setMensagem] = useState('');
   const [erro, setErro] = useState('');
 
-  const FIREBASE_API_KEY = 'AIzaSyD6tz12bZnHPNuHomOmUYSQpBpG9vkZEQc'; // Coloque aqui sua chave de API do Firebase
 
   const handleResetPassword = async () => {
     if (!email) {
