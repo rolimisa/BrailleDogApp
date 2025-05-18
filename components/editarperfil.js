@@ -17,14 +17,13 @@ export default function PerfilScreen({ navigation }) {
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        const token = await AsyncStorage.getItem('userToken');
+        const token = await AsyncStorage.getItem('token');
         if (!token) {
           Alert.alert('Erro', 'Usuário não autenticado');
           navigation.navigate('Login'); // manda voltar pra login se não tiver token
           return;
         }
 
-      
         const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_API_KEY}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -55,7 +54,7 @@ export default function PerfilScreen({ navigation }) {
 
     setLoading(true);
     try {
-      const idToken = await AsyncStorage.getItem('userToken');
+      const idToken = await AsyncStorage.getItem('token');
       if (!idToken) {
         Alert.alert('Erro', 'Usuário não autenticado');
         setLoading(false);
@@ -84,7 +83,7 @@ export default function PerfilScreen({ navigation }) {
 
       // Atualiza o token se vier um novo (sempre atualiza pra manter sessão)
       if (data.idToken) {
-        await AsyncStorage.setItem('userToken', data.idToken);
+        await AsyncStorage.setItem('token', data.idToken);
       }
 
       Alert.alert('Sucesso', 'Perfil atualizado!');
@@ -97,7 +96,7 @@ export default function PerfilScreen({ navigation }) {
   };
 
   const handleLogout = async () => {
-    await AsyncStorage.removeItem('userToken');
+    await AsyncStorage.removeItem('token');
     Alert.alert('Logout', 'Você saiu do app.');
     navigation.navigate('Login');
   };

@@ -91,7 +91,7 @@ export default function Cadastrar({ navigation }) {
 
       if (!response.ok) throw new Error(data.error.message);
 
-      await AsyncStorage.setItem('userToken', data.idToken);
+      await AsyncStorage.setItem('token', data.idToken);
       Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
       navigation.navigate('Login');
 

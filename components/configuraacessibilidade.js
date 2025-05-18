@@ -3,33 +3,15 @@ import {View,Text,Switch,StyleSheet,StatusBar} from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 const ConfiguraAcessibilidade = () => {
-  const [temaClaro, setTemaClaro] = useState(false);
   const [temaEscuro, setTemaEscuro] = useState(false);
-  const [tamanhoTexto, setTamanhoTexto] = useState(14);
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#3B4CCA" />
-      <View style={styles.header}>
-        <Text style={styles.headerText}>ACESSIBILIDADE DO APLICATIVO</Text>
-      </View>
-
-      <View style={styles.box}>
-        <View style={styles.row}>
-          <Ionicons name="sunny-outline" size={24} color="black" />
-          <Text style={styles.label}>TEMA CLARO</Text>
-          <Switch
-            value={temaClaro}
-            onValueChange={setTemaClaro}
-            trackColor={{ true: '#3B4CCA', false: '#ccc' }}
-          />
-        </View>
-      </View>
-
       <View style={styles.box}>
         <View style={styles.row}>
           <Ionicons name="moon-outline" size={24} color="black" />
-          <View style={{ flex: 1 }}>
+          <View>
             <Text style={styles.label}>TEMA ESCURO</Text>
             <Text style={styles.desc}>
               FACILITA A VISUALIZAÇÃO{"\n"}PARA PESSOAS COM BAIXA VISÃO
@@ -42,12 +24,6 @@ const ConfiguraAcessibilidade = () => {
           />
         </View>
       </View>
-
-      <View style={styles.box}>
-        <Text style={[styles.previewText, { fontSize: tamanhoTexto }]}>
-          Texto de exemplo
-        </Text>
-      </View>
     </View>
   );
 };
@@ -57,19 +33,10 @@ export default ConfiguraAcessibilidade;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ADD8E6',
+    backgroundColor: '#a9c2e7',
     padding: 10,
-  },
-  header: {
-    backgroundColor: '#3B4CCA',
-    padding: 20,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  headerText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   box: {
     backgroundColor: '#D6EAF8',
@@ -89,7 +56,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   desc: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#333',
     marginTop: 5,
   },

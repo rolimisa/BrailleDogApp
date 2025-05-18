@@ -109,7 +109,7 @@ function App() {
           />
 
           <Stack.Screen
-          name="Editar Perfil"
+          name="EditarPerfil"
           component={EditaPerfil}
           options={{
             tittle: 'Editar Perfil'

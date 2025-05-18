@@ -4,13 +4,11 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 export default function PalavrasBraille({ navigation }) {
   return (
     <View style={styles.container}>
-
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Exercicios')}>
         <Text style={styles.buttonText}>
           EXERCÍCIOS
         </Text>
       </TouchableOpacity>
-
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Historico')}>
         <Text style={styles.buttonText}>
           HISTÓRICO DE{"\n"}PALAVRAS ACERTADAS
@@ -46,7 +44,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 20,
-    borderWidth: 2,
+    borderWidth: 5,
     borderColor: 'black',
   },
   buttonText: {

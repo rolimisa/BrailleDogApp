@@ -15,7 +15,7 @@ const EditarPerfil = ({ navigation }) => {
 
         <TouchableOpacity
           style={styles.circleButton}
-          onPress={() => navigation.navigate('Editar Perfil')}
+          onPress={() => navigation.navigate('EditarPerfil')}
         >
           <Text style={styles.buttonText}>EDITAR{"\n"}PERFIL</Text>
         </TouchableOpacity>
@@ -45,8 +45,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 5,
-    borderWidth: 1,
     borderColor: '#000',
+    borderWidth: 5,
   },
   buttonText: {
     textAlign: 'center',

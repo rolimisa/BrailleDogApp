@@ -76,7 +76,6 @@ export default function Login({ navigation }) {
       }
 
       await AsyncStorage.setItem('token', data.idToken);
-      await AsyncStorage.setItem('userId', data.localId);
 
       navigation.navigate('Menu');
     } catch (error) {

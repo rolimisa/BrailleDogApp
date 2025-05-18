@@ -49,7 +49,7 @@ export default function MenuScreen({ navigation }) {
         { label: 'PALAVRAS\nEM\nBRAILLE', route: 'Palavras' },
         { label: 'EXERCÍCIOS', route: 'Opcoes' },
       ], [
-        { label: 'CONFIGURAÇÕES', route: 'Configuracoes' },
+        { label: 'AJUSTES', route: 'Configuracoes' },
         { label: 'SOBRE', route: 'Sobre' },
       ]].map((row, rowIndex) => (
         <View key={rowIndex} style={styles.cardContainer}>
@@ -68,16 +68,6 @@ export default function MenuScreen({ navigation }) {
           </View>
         </View>
       ))}
-
-      {/* Switch de tema */}
-      <View style={styles.switchContainer}>
-        <Switch
-          trackColor={{ false: "#767577", true: "#81b0ff" }}
-          thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-          onValueChange={toggleSwitch}
-          value={isEnabled}
-        />
-      </View>
     </Animated.View>
   );
 }
@@ -87,7 +77,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingTop: 50,
-    padding:10,
+    padding: 10,
   },
   title: {
     fontSize: 32,
@@ -114,23 +104,24 @@ buttonRow: {
 },
 button: {
   borderRadius: 60,
-  width: 100,
-  height: 100,
+  width: 120,
+  height: 120,
   justifyContent: 'center',
   alignItems: 'center',
   marginHorizontal: 8, // pode aumentar pra mais distância
-  borderWidth: 1.5,
+  borderWidth: 5,
   borderColor: '#000',
   elevation: 4,
   shadowColor: '#000',
   shadowOffset: { width: 2, height: 2 },
   shadowOpacity: 0.2,
   shadowRadius: 4,
+  backgroundColor: "rgb(223, 228, 183)",
 },
   buttonText: {
     textAlign: 'center',
-    fontSize: 12,
-    fontFamily: 'Comic Sans MS',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   switchContainer: {
     marginTop: 30,
