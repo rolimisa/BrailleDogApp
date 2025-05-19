@@ -20,7 +20,7 @@ export default function PalavrasBraille({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Exercicios')}>
-        <Text style={styles.buttonText}>EXERCÍCIOS</Text>
+        <Text style={styles.buttonText}>EXERCÍCIOS EM BRAILLE</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Historico')}>
         <Text style={styles.buttonText}>HISTÓRICO DE{"\n"}PALAVRAS ACERTADAS</Text>
@@ -47,12 +47,12 @@ const getStyles = (isDark) =>
       alignItems: 'center',
       marginVertical: 20,
       borderWidth: 5,
-      borderColor: isDark ? '#fff' : 'black',
+      borderColor: isDark ?'rgb(223, 228, 183)' : 'black',
     },
     buttonText: {
       textAlign: 'center',
       fontSize: 16,
       fontWeight: 'bold',
-      color: isDark ? '#fff' : '#000',
+      color: isDark ? 'rgb(223, 228, 183)' : '#000',
     },
   });

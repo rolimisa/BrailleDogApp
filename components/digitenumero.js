@@ -161,7 +161,7 @@ const getStyles = (isDark, circleSize, cellWidth) =>
     celaBox: {
       backgroundColor: isDark ? '#2d2d2d' : '#dfe4b7',
       borderWidth: 2,
-      borderColor: isDark ? '#fff' : '#000',
+      borderColor: isDark ? 'rgb(223, 228, 183)' : '#000',
       borderRadius: 10,
       padding: 12,
       margin: 5,
@@ -186,7 +186,7 @@ const getStyles = (isDark, circleSize, cellWidth) =>
     num: {
       marginTop: 8,
       fontSize: 18,
-      color: isDark ? '#fff' : '#333',
+      color: isDark ? 'rgb(223, 228, 183)' : '#333',
       textAlign: 'center',
       fontWeight: '600',
     },

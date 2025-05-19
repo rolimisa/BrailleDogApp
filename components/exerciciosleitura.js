@@ -334,7 +334,7 @@ const getStyles = (isDark) => StyleSheet.create({
   celaBox: {
     backgroundColor: isDark ? '#2d2d2d' : '#dfe4b7',
     borderWidth: 2,
-    borderColor: isDark ? '#fff' : '#333',
+    borderColor: isDark ? 'rgb(223, 228, 183)' : '#333',
     borderRadius: 10,
     padding: 12,
     margin: 5,
@@ -358,7 +358,7 @@ const getStyles = (isDark) => StyleSheet.create({
   plvLabel: {
     marginTop: 5,
     fontSize: 24,
-    color: isDark ? '#fff' : '#222',
+    color: isDark ? 'rgb(223, 228, 183)' : '#222',
     fontWeight: '600',
     textAlign: 'center',
   },

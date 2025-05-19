@@ -173,7 +173,7 @@ const getStyles = (isDark) => StyleSheet.create({
     padding: 12,
     borderRadius: 10,
     borderWidth: 5,
-    borderColor: '#555',
+    borderColor: isDark ? 'rgb(223, 228, 183)' : '#555',
   },
   letraContainer: {
     alignItems: 'center',
@@ -200,6 +200,6 @@ const getStyles = (isDark) => StyleSheet.create({
     marginTop: 8,
     fontSize: 18,
     fontWeight: '600',
-    color: isDark ? '#fff' : '#333',
+    color: isDark ? 'rgb(223, 228, 183)' : '#333',
   },
 });

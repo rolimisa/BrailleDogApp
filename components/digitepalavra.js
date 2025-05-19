@@ -132,7 +132,7 @@ const getStyles = (isDark, cellWidth, circleSize) =>
     celaBox: {
       backgroundColor: isDark ? '#2d2d2d' : '#dfe4b7',
       borderWidth: 2,
-      borderColor: isDark ? '#fff' : '#000',
+      borderColor: isDark ? 'rgb(223, 228, 183)' : '#000',
       borderRadius: 10,
       padding: 17,
       margin: 5,
@@ -157,7 +157,7 @@ const getStyles = (isDark, cellWidth, circleSize) =>
     plvLabel: {
       marginTop: 5,
       fontSize: 26,
-      color: isDark ? '#fff' : '#222',
+      color: isDark ? 'rgb(223, 228, 183)' : '#222',
       fontWeight: '600',
       textAlign: 'center',
     },

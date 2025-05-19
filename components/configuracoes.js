@@ -75,13 +75,13 @@ const getStyles = (isDark) =>
       justifyContent: 'center',
       alignItems: 'center',
       elevation: 5,
-      borderColor: isDark ? '#fff' : '#000',
+      borderColor: isDark ? 'rgb(223, 228, 183)' : '#000',
       borderWidth: 5,
     },
     buttonText: {
       textAlign: 'center',
       fontSize: 16,
       fontWeight: 'bold',
-      color: isDark ? '#fff' : '#000',
+      color: isDark ? 'rgb(223, 228, 183)' : '#000',
     },
   });

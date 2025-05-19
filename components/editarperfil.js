@@ -222,7 +222,7 @@ const getStyles = (isDark) =>
       backgroundColor: isDark ? '#121212' : '#a9c2e7',
     },
     header: {
-      backgroundColor: '#3B4CCA',
+      backgroundColor: '#4a4aa3',
       padding: 20,
       alignItems: 'center',
     },
@@ -258,7 +258,7 @@ const getStyles = (isDark) =>
       color: isDark ? '#fff' : '#000',
     },
     saveButton: {
-      backgroundColor: '#3B4CCA',
+      backgroundColor: '#4a4aa3',
       padding: 14,
       borderRadius: 12,
       alignItems: 'center',

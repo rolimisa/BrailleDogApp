@@ -40,7 +40,7 @@ function App() {
         name="Alfabeto"
         component={AlfabetoBraille}
         options = {{
-          tittle: 'Alfabeto Braille'
+          title: 'Alfabeto Braille'
         }}
         />
 
@@ -48,7 +48,7 @@ function App() {
           name="Opcoes"
           component={OpcoesPalavras}
           options={{
-            tittle: 'Opções Palavras em Braille'
+            title: 'Exercícios'
           }}
         />
 
@@ -56,7 +56,7 @@ function App() {
           name="Palavras"
           component={DigitePalavra}
           options={{
-            tittle: 'Palavras em Braille'
+            title: 'Palavras em Braille'
           }}
         />
 
@@ -64,7 +64,7 @@ function App() {
           name="Numeros"
           component={DigiteNumero}
           options={{
-            tittle: 'Numeros em Braille'
+            title: 'Números em Braille'
           }}
         />
 
@@ -72,7 +72,7 @@ function App() {
           name="Configuracoes"
           component={Configuracoes}
           options={{
-            tittle: 'Configuracoes'
+            title: 'Ajustes'
           }}
           />
 
@@ -80,7 +80,7 @@ function App() {
           name="Exercicios"
           component={Exercicios}
           options={{
-            tittle: 'Exercicios'
+            title: 'Exercícios em Braille'
           }}
           />
 
@@ -88,7 +88,7 @@ function App() {
           name="Historico"
           component={Historico}
           options={{
-            tittle: 'Historico de palavras consultadas'
+            title: 'Histórico'
           }}
           />
 
@@ -96,7 +96,7 @@ function App() {
           name="Sobre"
           component={Sobre}
           options={{
-            tittle: 'Sobre'
+            title: 'Sobre'
           }}
           />
 
@@ -104,7 +104,7 @@ function App() {
           name="ConfigurarAcessibilidade"
           component={ConfiguraAcessibilidade}
           options={{
-            tittle: 'Configurar Acessbilidade'
+            title: 'Configurar Acessibilidade'
           }}
           />
 
@@ -112,7 +112,7 @@ function App() {
           name="EditarPerfil"
           component={EditaPerfil}
           options={{
-            tittle: 'Editar Perfil'
+            title: 'Editar Perfil'
           }}
           />
 

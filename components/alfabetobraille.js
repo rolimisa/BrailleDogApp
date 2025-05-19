@@ -108,12 +108,12 @@ const getStyles = (isDark) =>
       justifyContent: 'center',
       alignItems: 'center',
       borderWidth: 5,
-      borderColor: isDark ? '#fff' : 'black',
+      borderColor: isDark ? 'rgb(223, 228, 183)' : 'black',
     },
     textoLetra: {
       fontSize: 26,
       fontWeight: 'bold',
-      color: isDark ? '#fff' : '#000',
+      color: isDark ? 'rgb(223, 228, 183)' : '#000',
     },
     modalOverlay: {
       flex: 1,
@@ -132,7 +132,7 @@ const getStyles = (isDark) =>
       fontSize: 40,
       fontWeight: 'bold',
       marginBottom: 20,
-      color: isDark ? '#fff' : '#000',
+      color: isDark ?  'rgb(223, 228, 183)' : '#000',
     },
     cela: {
       flexDirection: 'row',

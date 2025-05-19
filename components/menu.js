@@ -32,7 +32,7 @@ export default function MenuScreen({ navigation }) {
 
   const textColor = animatedValue.interpolate({
     inputRange: [0, 1],
-    outputRange: ['#000', '#fff'],
+    outputRange: ['#000','rgb(223, 228, 183)'],
   });
 
   const styles = getStyles(isDarkMode);
@@ -100,7 +100,7 @@ const getStyles = (isDarkMode) =>
       alignItems: 'center',
       marginHorizontal: 8,
       borderWidth: 5,
-      borderColor: isDarkMode ? '#fff' : '#000',
+      borderColor: isDarkMode ? 'rgb(223, 228, 183)' : '#000',
       elevation: 4,
       shadowColor: '#000',
       shadowOffset: { width: 2, height: 2 },
