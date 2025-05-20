@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { palavras, alfBraille } from '../src/palavras';
+import { palavras } from '../src/palavras';
+import alfBraille from './afalbraille';
 import { salvarScore, carregarScore, salvarPalavrasAcertadas, carregarPalavrasAcertadas } from '../src/database';
 
 export default function ExercicioBraille() {

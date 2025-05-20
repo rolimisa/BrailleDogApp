@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { carregarPalavrasAcertadas } from '../src/database';
-import { alfBraille } from '../src/palavras';
+import alfBraille  from './afalbraille';
 
 export default function HistoricoPalavras({ navigation }) {
   const [palavrasAcertadas, setPalavrasAcertadas] = useState([]);
