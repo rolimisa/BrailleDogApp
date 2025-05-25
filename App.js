@@ -12,20 +12,20 @@ function App() {
         <Stack.Screen
           name="Login"
           component={Login}
-          options={{ headerShown: false }} // Não mostra o cabeçalho na tela de login
+          options={{ headerShown: false }} 
         />
         <Stack.Screen
           name="EsqueciSenha"
           component={EsqueciSenha}
           options={{
-            title: 'Esqueci Senha', // Título da tela
+            title: 'Esqueci Senha', 
           }}
           />
         <Stack.Screen
           name="Cadastrar"
           component={Cadastrar}
           options={{
-            title: 'Cadastro', // Título da tela
+            title: 'Cadastro', 
           }}
         />
         <Stack.Screen

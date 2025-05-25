@@ -1,23 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
-  Alert, 
-  Animated, 
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  Keyboard,
-  TouchableWithoutFeedback,
-  ScrollView
-} from 'react-native';
+import {  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Animated, Image,KeyboardAvoidingView,Platform,Keyboard,TouchableWithoutFeedback,ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { FIREBASE_API_KEY } from '@env';
+import Constants from 'expo-constants';
 
+const FIREBASE_API_KEY = Constants.expoConfig.extra.FIREBASE_API_KEY;
 export default function Cadastrar({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

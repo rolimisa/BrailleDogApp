@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  Dimensions,
-  ScrollView,
-  Keyboard,
-  TouchableWithoutFeedback,
-} from 'react-native';
+import { View, Text, TextInput, StyleSheet, Dimensions, ScrollView, Keyboard, TouchableWithoutFeedback,} from'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
+const num={
+ num:17,
+}
 
 const numerosBraille = {
   '0': 14,
@@ -24,6 +20,8 @@ const numerosBraille = {
   '9': 6,
   virg: 4,
 };
+
+
 
 export default function NumBraille() {
   const [num, setNum] = useState('');

@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { FIREBASE_API_KEY } from '@env';
+import Constants from 'expo-constants';
+
+const FIREBASE_API_KEY = Constants.expoConfig.extra.FIREBASE_API_KEY;
+
 
 export default function EsqueciSenha({ navigation }) {
   const [email, setEmail] = useState('');

@@ -1,21 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  StatusBar
-} from 'react-native';
-import {
-  Ionicons,
-  MaterialCommunityIcons,
-  Feather,
-  FontAwesome
-} from '@expo/vector-icons';
+import {View,Text,TextInput,TouchableOpacity,StyleSheet,Alert,StatusBar} from 'react-native';
+import {Ionicons,MaterialCommunityIcons,Feather,FontAwesome} from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { FIREBASE_API_KEY } from '@env';
+import Constants from 'expo-constants';
+
+const FIREBASE_API_KEY = Constants.expoConfig.extra.FIREBASE_API_KEY;
 
 export default function PerfilScreen({ navigation }) {
   const [usuario, setUsuario] = useState('');
