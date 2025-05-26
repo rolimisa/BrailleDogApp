@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {View, Text,TextInput,TouchableOpacity,StyleSheet,Animated,Image,KeyboardAvoidingView,Platform,Keyboard,TouchableWithoutFeedback,ScrollView} from 'react-native';
+import {
+  View, Text, TextInput, TouchableOpacity, StyleSheet, Animated, Image,
+  KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback, ScrollView
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 
 const FIREBASE_API_KEY = Constants.expoConfig.extra.FIREBASE_API_KEY;
-
-console.log("API KEY É:", FIREBASE_API_KEY);
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
@@ -34,12 +35,28 @@ export default function Login({ navigation }) {
       Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
       () => setKeyboardStatus(false)
     );
-
     return () => {
       showListener.remove();
       hideListener.remove();
     };
   }, []);
+
+  useEffect(() => {
+    if (errorMessage) {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+
+      const timeout = setTimeout(() => {
+        setErrorMessage('');
+        fadeAnim.setValue(0);
+      }, 5000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [errorMessage]);
 
   const getFirebaseErrorMessage = (message) => {
     const errorMessages = {
@@ -74,12 +91,16 @@ export default function Login({ navigation }) {
       );
       const data = await response.json();
 
-      if (!response.ok) throw data.error;
+      if (!response.ok) {
+        console.log('Resposta do Firebase com erro:', data);
+        const firebaseMsg = data?.error?.message || 'DEFAULT';
+        throw new Error(firebaseMsg);
+      }
 
       await AsyncStorage.setItem('token', data.idToken);
-      navigation.navigate('Menu');
+      navigation.reset({ index: 0, routes: [{ name: 'Menu' }] });
     } catch (error) {
-      console.log('Erro de login:', error);
+      console.log('Erro de login:', error.message);
       setErrorMessage(getFirebaseErrorMessage(error.message));
     }
   };
@@ -98,7 +119,7 @@ export default function Login({ navigation }) {
             <Image source={require('./img/logo.png')} style={styles.logo} resizeMode="contain" />
             <Text style={styles.title}>BrailleDog</Text>
 
-            {errorMessage && (
+            {errorMessage !== '' && (
               <Animated.View style={[styles.errorContainer, { opacity: fadeAnim }]}>
                 <Icon name="alert-circle" size={16} color="#d32f2f" />
                 <Text style={styles.errorText}> {errorMessage}</Text>
@@ -155,97 +176,36 @@ export default function Login({ navigation }) {
   );
 }
 
-const getStyles = (isDark) =>
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: isDark ? '#121212' : '#a9c2e7',
-    },
-    scrollContainer: {
-      flexGrow: 1,
-      justifyContent: 'center',
-    },
-    contentContainer: {
-      padding: 20,
-      alignItems: 'center',
-    },
-    keyboardActive: {
-      paddingTop: 20,
-    },
-    title: {
-      fontSize: 36,
-      fontWeight: '600',
-      marginBottom: 40,
-      color: isDark ? '#fff' : '#333',
-    },
-    logo: {
-      width: 200,
-      height: 250,
-      marginBottom: 20,
-      borderRadius: 80,
-    },
-    inputContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: isDark ? '#2d2d2d' : '#fff',
-      borderRadius: 12,
-      marginBottom: 15,
-      paddingHorizontal: 15,
-      width: '100%',
-      height: 50,
-      elevation: 3,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-    },
-    icon: {
-      marginRight: 10,
-    },
-    input: {
-      flex: 1,
-      fontSize: 16,
-      color: isDark ? '#fff' : '#333',
-    },
-    forgotText: {
-      alignSelf: 'flex-end',
-      color: '#4a4aa3',
-      marginBottom: 25,
-      fontSize: 14,
-      textDecorationLine: 'underline',
-    },
-    button: {
-      backgroundColor: '#4a4aa3',
-      width: '100%',
-      paddingVertical: 15,
-      borderRadius: 12,
-      alignItems: 'center',
-      marginBottom: 15,
-    },
-    buttonText: {
-      color: '#fff',
-      fontSize: 17,
-      fontWeight: '600',
-    },
-    registerText: {
-      fontSize: 14,
-      color: isDark ? '#ccc' : '#555',
-      marginTop: 10,
-    },
-    errorContainer: {
-      backgroundColor: '#ffebee',
-      padding: 12,
-      borderRadius: 8,
-      marginVertical: 10,
-      width: '100%',
-      borderWidth: 1,
-      borderColor: '#d32f2f',
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    errorText: {
-      color: '#d32f2f',
-      fontSize: 14,
-    },
-  });
+const getStyles = (isDark) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: isDark ? '#121212' : '#a9c2e7' },
+  scrollContainer: { flexGrow: 1, justifyContent: 'center' },
+  contentContainer: { padding: 20, alignItems: 'center' },
+  keyboardActive: { paddingTop: 20 },
+  title: { fontSize: 36, fontWeight: '600', marginBottom: 40, color: isDark ? '#fff' : '#333' },
+  logo: { width: 200, height: 250, marginBottom: 20, borderRadius: 80 },
+  inputContainer: {
+    flexDirection: 'row', alignItems: 'center', backgroundColor: isDark ? '#2d2d2d' : '#fff',
+    borderRadius: 12, marginBottom: 15, paddingHorizontal: 15, width: '100%', height: 50,
+    elevation: 3, shadowColor: '#000', shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1, shadowRadius: 4,
+  },
+  icon: { marginRight: 10 },
+  input: { flex: 1, fontSize: 16, color: isDark ? '#fff' : '#333' },
+  forgotText: {
+    alignSelf: 'flex-end', color: '#4a4aa3', marginBottom: 25,
+    fontSize: 14, textDecorationLine: 'underline',
+  },
+  button: {
+    backgroundColor: '#4a4aa3', width: '100%', paddingVertical: 15,
+    borderRadius: 12, alignItems: 'center', marginBottom: 15,
+  },
+  buttonText: { color: '#fff', fontSize: 17, fontWeight: '600' },
+  registerText: { fontSize: 14, color: isDark ? '#ccc' : '#555', marginTop: 10 },
+  errorContainer: {
+    backgroundColor: '#ffebee', padding: 12, borderRadius: 8,
+    marginVertical: 10, width: '100%', borderWidth: 1,
+    borderColor: '#d32f2f', flexDirection: 'row',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  errorText: { color: '#d32f2f', fontSize: 14 },
+});

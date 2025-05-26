@@ -26,8 +26,7 @@ export default function PerfilScreen({ navigation }) {
       try {
         const token = await AsyncStorage.getItem('token');
         if (!token) {
-          Alert.alert('Erro', 'Usuário não autenticado');
-          navigation.navigate('Login');
+          navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
           return;
         }
 
@@ -111,9 +110,13 @@ export default function PerfilScreen({ navigation }) {
   };
 
   const handleLogout = async () => {
-    await AsyncStorage.removeItem('token');
-    Alert.alert('Logout', 'Você saiu do app.');
-    navigation.navigate('Login');
+    try {
+      await AsyncStorage.removeItem('token');
+      Alert.alert('Logout', 'Você saiu do app.');
+      navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+    } catch (e) {
+      Alert.alert('Erro', 'Falha ao sair do app.');
+    }
   };
 
   const renderEditableField = (icon, value, onChange, placeholder, secure = false, mostrar, toggleMostrar) => (
@@ -157,34 +160,16 @@ export default function PerfilScreen({ navigation }) {
 
       <View style={styles.form}>
         {renderEditableField(
-          <Ionicons name="person" size={20} color={isDark ? '#fff' : 'black'} />,
-          usuario,
-          setUsuario,
-          'Nome de usuário'
+          <Ionicons name="person" size={20} color={isDark ? '#fff' : 'black'} />, usuario, setUsuario, 'Nome de usuário'
         )}
         {renderEditableField(
-          <MaterialCommunityIcons name="email-outline" size={20} color={isDark ? '#fff' : 'black'} />,
-          email,
-          setEmail,
-          'Email'
+          <MaterialCommunityIcons name="email-outline" size={20} color={isDark ? '#fff' : 'black'} />, email, setEmail, 'Email'
         )}
         {renderEditableField(
-          <MaterialCommunityIcons name="lock-outline" size={20} color={isDark ? '#fff' : 'black'} />,
-          senha,
-          setSenha,
-          'Nova senha',
-          true,
-          mostrarSenha,
-          () => setMostrarSenha(!mostrarSenha)
+          <MaterialCommunityIcons name="lock-outline" size={20} color={isDark ? '#fff' : 'black'} />, senha, setSenha, 'Nova senha', true, mostrarSenha, () => setMostrarSenha(!mostrarSenha)
         )}
         {renderEditableField(
-          <MaterialCommunityIcons name="lock-outline" size={20} color={isDark ? '#fff' : 'black'} />,
-          confirmarSenha,
-          setConfirmarSenha,
-          'Confirmar nova senha',
-          true,
-          mostrarConfirmarSenha,
-          () => setMostrarConfirmarSenha(!mostrarConfirmarSenha)
+          <MaterialCommunityIcons name="lock-outline" size={20} color={isDark ? '#fff' : 'black'} />, confirmarSenha, setConfirmarSenha, 'Confirmar nova senha', true, mostrarConfirmarSenha, () => setMostrarConfirmarSenha(!mostrarConfirmarSenha)
         )}
 
         <TouchableOpacity

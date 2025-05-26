@@ -112,4 +112,4 @@ const getStyles = (isDarkMode) =>
       fontSize: 16,
       fontWeight: 'bold',
     },
-  });
+  }); 

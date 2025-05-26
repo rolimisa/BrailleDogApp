@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Dimensions,
-  Modal,
-  SafeAreaView,
-} from 'react-native';
+import {View,Text,StyleSheet,TextInput,TouchableOpacity,Dimensions,Modal,SafeAreaView,} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { palavras } from '../src/palavras';
