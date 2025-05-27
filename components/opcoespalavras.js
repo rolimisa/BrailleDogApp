@@ -33,13 +33,13 @@ const getStyles = (isDark) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: isDark ? '#121212' : '#a9c2e7',
+      backgroundColor: isDark ? '#000000' : '#a9c2e7',
       alignItems: 'center',
       justifyContent: 'center',
       padding: 20,
     },
     button: {
-      backgroundColor: isDark ? '#2d2d2d' : '#dfe4b7',
+      backgroundColor: isDark ? '#000000' : '#dfe4b7', // fundo preto no escuro
       borderRadius: 100,
       width: 180,
       height: 180,
@@ -47,12 +47,12 @@ const getStyles = (isDark) =>
       alignItems: 'center',
       marginVertical: 20,
       borderWidth: 5,
-      borderColor: isDark ?'rgb(223, 228, 183)' : 'black',
+      borderColor: isDark ? '#FFD700' : 'black', // contorno amarelo no escuro
     },
     buttonText: {
       textAlign: 'center',
       fontSize: 16,
       fontWeight: 'bold',
-      color: isDark ? 'rgb(223, 228, 183)' : '#000',
+      color: isDark ? '#00BFFF' : '#000', // azul vibrante no escuro
     },
   });

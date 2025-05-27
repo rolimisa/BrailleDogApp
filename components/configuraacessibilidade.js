@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {View,Text,Switch,StyleSheet,StatusBar} from 'react-native';
+import { View, Text, Switch, StyleSheet, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -26,10 +26,13 @@ const ConfiguraAcessibilidade = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#3B4CCA" />
+      <StatusBar
+        barStyle={temaEscuro ? 'light-content' : 'dark-content'}
+        backgroundColor={temaEscuro ? '#1c1c1c' : '#3B4CCA'}
+      />
       <View style={styles.box}>
         <View style={styles.row}>
-          <Ionicons name="moon-outline" size={24} color="black" />
+          <Ionicons name="moon-outline" size={24} color={temaEscuro ? '#FFD700' : '#000'} />
           <View>
             <Text style={styles.label}>TEMA ESCURO</Text>
             <Text style={styles.desc}>
@@ -37,9 +40,10 @@ const ConfiguraAcessibilidade = () => {
             </Text>
           </View>
           <Switch
-            value={temaEscuro}          
+            value={temaEscuro}
             onValueChange={handleTheme}
-            trackColor={{ true: '#3B4CCA', false: '#ccc' }}
+            trackColor={{ true: '#ccc', false: '#ccc' }}
+            thumbColor={temaEscuro ? '#FFD700' : '#fff'}
           />
         </View>
       </View>
@@ -73,11 +77,11 @@ const getStyles = (isDarkMode) =>
     label: {
       fontSize: 16,
       fontWeight: 'bold',
-      color: isDarkMode ? '#fff' : '#000',
+      color: isDarkMode ? '#00BFFF' : '#000',
     },
     desc: {
       fontSize: 14,
-      color: isDarkMode ? '#ccc' : '#333',
+      color: isDarkMode ? '#00BFFF' : '#333',
       marginTop: 5,
     },
   });

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {View,Text,TouchableOpacity,StyleSheet,StatusBar,SafeAreaView} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, StatusBar, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const EditarPerfil = ({ navigation }) => {
@@ -21,7 +21,7 @@ const EditarPerfil = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor={isDark ? '#1c1c1c' : '#3B4CCA'}
+        backgroundColor={isDark ? '#000000' : '#3B4CCA'}
       />
       <View style={styles.content}>
         <TouchableOpacity
@@ -52,7 +52,7 @@ const getStyles = (isDark) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: isDark ? '#121212' : '#a9c2e7',
+      backgroundColor: isDark ? '#000000' : '#a9c2e7',
     },
     content: {
       flex: 1,
@@ -61,20 +61,20 @@ const getStyles = (isDark) =>
       gap: 40,
     },
     circleButton: {
-      backgroundColor: isDark ? '#2d2d2d' : '#F5F5B0',
+      backgroundColor: isDark ? '#000000' : '#F5F5B0', // fundo preto no modo escuro
       width: 160,
       height: 160,
       borderRadius: 80,
       justifyContent: 'center',
       alignItems: 'center',
       elevation: 5,
-      borderColor: isDark ? 'rgb(223, 228, 183)' : '#000',
+      borderColor: isDark ? '#FFD700' : '#000', // contorno amarelo vivo no escuro
       borderWidth: 5,
     },
     buttonText: {
       textAlign: 'center',
       fontSize: 16,
       fontWeight: 'bold',
-      color: isDark ? 'rgb(223, 228, 183)' : '#000',
+      color: isDark ? '#00BFFF' : '#000', // azul vivo no escuro
     },
   });

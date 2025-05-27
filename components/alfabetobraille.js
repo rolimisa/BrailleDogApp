@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {View,SafeAreaView,Text,TouchableOpacity,StyleSheet,FlatList,Dimensions,Modal,Pressable,} from'react-native';
+import { View, SafeAreaView, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, Modal, Pressable } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import alfBraille from './afalbraille';
 
@@ -35,8 +35,7 @@ export default function AlfabetoBrailleAnimado() {
             key={i}
             style={[
               styles.circle,
-              bit === '1' ? styles.filled : null,
-              isDark && bit !== '1' ? styles.circleDark : null,
+              bit === '1' ? styles.filled : styles.unfilled,
             ]}
           />
         ))}
@@ -45,7 +44,7 @@ export default function AlfabetoBrailleAnimado() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? '#121212' : '#a9c2e7' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? '#000000' : '#a9c2e7' }}>
       <View style={styles.container}>
         <FlatList
           data={alfabeto}
@@ -90,7 +89,7 @@ const getStyles = (isDark) =>
       paddingBottom: 20,
     },
     letra: {
-      backgroundColor: isDark ? '#2d2d2d' : '#dfe4b7',
+      backgroundColor: isDark ? '#000000' : '#dfe4b7',
       width: Dimensions.get('window').width / 3.5,
       height: 100,
       borderRadius: 50,
@@ -98,12 +97,12 @@ const getStyles = (isDark) =>
       justifyContent: 'center',
       alignItems: 'center',
       borderWidth: 5,
-      borderColor: isDark ? 'rgb(223, 228, 183)' : 'black',
+      borderColor: isDark ? '#FFD700' : 'black',
     },
     textoLetra: {
       fontSize: 26,
       fontWeight: 'bold',
-      color: isDark ? 'rgb(223, 228, 183)' : '#000',
+      color: isDark ? '#00BFFF' : '#000',
     },
     modalOverlay: {
       flex: 1,
@@ -112,7 +111,7 @@ const getStyles = (isDark) =>
       alignItems: 'center',
     },
     modalCard: {
-      backgroundColor: isDark ? '#2d2d2d' : '#dfe4b7',
+      backgroundColor: isDark ? '#000000' : '#dfe4b7',
       borderRadius: 16,
       padding: 24,
       alignItems: 'center',
@@ -122,7 +121,7 @@ const getStyles = (isDark) =>
       fontSize: 40,
       fontWeight: 'bold',
       marginBottom: 20,
-      color: isDark ?  'rgb(223, 228, 183)' : '#000',
+      color: isDark ? '#00BFFF' : '#000',
     },
     cela: {
       flexDirection: 'row',
@@ -134,16 +133,16 @@ const getStyles = (isDark) =>
     circle: {
       width: 80,
       height: 80,
-      borderRadius: 50,
-      borderWidth: 1,
-      borderColor: '#000',
+      borderRadius: 40,
       margin: 5,
-      backgroundColor: '#fff',
-    },
-    circleDark: {
-      backgroundColor: '#555',
+      borderWidth: 4,
     },
     filled: {
-      backgroundColor: isDark ? 'rgb(223, 228, 183)' : '#000',
+      backgroundColor: '#FFD700',
+      borderColor: '#FFD700',
+    },
+    unfilled: {
+      backgroundColor: '#000000',
+      borderColor: '#FFD700',
     },
   });

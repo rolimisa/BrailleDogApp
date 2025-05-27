@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import {View,Text,TextInput,TouchableOpacity,StyleSheet,Alert,StatusBar} from 'react-native';
-import {Ionicons,MaterialCommunityIcons,Feather,FontAwesome} from '@expo/vector-icons';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, StatusBar } from 'react-native';
+import { MaterialCommunityIcons, Feather, FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 
 const FIREBASE_API_KEY = Constants.expoConfig.extra.FIREBASE_API_KEY;
 
 export default function PerfilScreen({ navigation }) {
-  const [usuario, setUsuario] = useState('');
-  const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
@@ -21,39 +19,7 @@ export default function PerfilScreen({ navigation }) {
       const temaSalvo = await AsyncStorage.getItem('darkTheme');
       if (temaSalvo !== null) setIsDark(temaSalvo === 'true');
     };
-
-    const loadUserData = async () => {
-      try {
-        const token = await AsyncStorage.getItem('token');
-        if (!token) {
-          navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
-          return;
-        }
-
-        const res = await fetch(
-          `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_API_KEY}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ idToken: token }),
-          }
-        );
-
-        const data = await res.json();
-        if (res.ok && data.users?.length > 0) {
-          const user = data.users[0];
-          setEmail(user.email || '');
-          setUsuario(user.displayName || '');
-        } else {
-          throw data.error || new Error('Erro ao buscar dados do usuário');
-        }
-      } catch (error) {
-        Alert.alert('Erro', error.message || 'Erro desconhecido');
-      }
-    };
-
     carregarTema();
-    loadUserData();
   }, []);
 
   const styles = getStyles(isDark);
@@ -76,10 +42,8 @@ export default function PerfilScreen({ navigation }) {
       const body = {
         idToken,
         returnSecureToken: true,
+        password: senha,
       };
-      if (email) body.email = email;
-      if (senha) body.password = senha;
-      if (usuario) body.displayName = usuario;
 
       const response = await fetch(
         `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${FIREBASE_API_KEY}`,
@@ -100,7 +64,7 @@ export default function PerfilScreen({ navigation }) {
         await AsyncStorage.setItem('token', data.idToken);
       }
 
-      Alert.alert('Sucesso', 'Perfil atualizado!');
+      Alert.alert('Sucesso', 'Senha atualizada!');
       setSenha('');
       setConfirmarSenha('');
     } catch (error) {
@@ -109,36 +73,22 @@ export default function PerfilScreen({ navigation }) {
     setLoading(false);
   };
 
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem('token');
-      Alert.alert('Logout', 'Você saiu do app.');
-      navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
-    } catch (e) {
-      Alert.alert('Erro', 'Falha ao sair do app.');
-    }
-  };
-
   const renderEditableField = (icon, value, onChange, placeholder, secure = false, mostrar, toggleMostrar) => (
     <View style={styles.editFieldContainer}>
       <View style={styles.editFieldContent}>
         {icon}
         <TextInput
-          style={styles.editInput}
+          style={[styles.editInput, { color: isDark ? '#00BFFF' : '#000' }]}
           placeholder={placeholder}
-          placeholderTextColor={isDark ? '#ccc' : '#888'}
+          placeholderTextColor={isDark ? '#00BFFF' : '#888'}
           secureTextEntry={secure && !mostrar}
           value={value}
           onChangeText={onChange}
           autoCapitalize="none"
         />
-        {secure ? (
-          <TouchableOpacity onPress={toggleMostrar}>
-            <Feather name={mostrar ? 'eye' : 'eye-off'} size={20} color={isDark ? '#fff' : '#3B4CCA'} />
-          </TouchableOpacity>
-        ) : (
-          <Feather name="edit" size={18} color={isDark ? '#fff' : '#3B4CCA'} />
-        )}
+        <TouchableOpacity onPress={toggleMostrar}>
+          <Feather name={mostrar ? 'eye' : 'eye-off'} size={20} color={isDark ? '#00BFFF' : '#3B4CCA'} />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -150,26 +100,16 @@ export default function PerfilScreen({ navigation }) {
         backgroundColor={isDark ? '#1c1c1c' : '#3B4CCA'}
       />
 
-      <View style={styles.header}>
-        <Text style={styles.headerText}>EDITAR PERFIL</Text>
-      </View>
-
       <View style={styles.avatarContainer}>
-        <FontAwesome name="user-circle-o" size={100} color={isDark ? '#fff' : '#000'} />
+        <FontAwesome name="user-circle-o" size={100} color={isDark ? '#FFD700' : '#000'} />
       </View>
 
       <View style={styles.form}>
         {renderEditableField(
-          <Ionicons name="person" size={20} color={isDark ? '#fff' : 'black'} />, usuario, setUsuario, 'Nome de usuário'
+          <MaterialCommunityIcons name="lock-outline" size={20} color={isDark ? '#00BFFF' : '#000'} />, senha, setSenha, 'Nova senha', true, mostrarSenha, () => setMostrarSenha(!mostrarSenha)
         )}
         {renderEditableField(
-          <MaterialCommunityIcons name="email-outline" size={20} color={isDark ? '#fff' : 'black'} />, email, setEmail, 'Email'
-        )}
-        {renderEditableField(
-          <MaterialCommunityIcons name="lock-outline" size={20} color={isDark ? '#fff' : 'black'} />, senha, setSenha, 'Nova senha', true, mostrarSenha, () => setMostrarSenha(!mostrarSenha)
-        )}
-        {renderEditableField(
-          <MaterialCommunityIcons name="lock-outline" size={20} color={isDark ? '#fff' : 'black'} />, confirmarSenha, setConfirmarSenha, 'Confirmar nova senha', true, mostrarConfirmarSenha, () => setMostrarConfirmarSenha(!mostrarConfirmarSenha)
+          <MaterialCommunityIcons name="lock-outline" size={20} color={isDark ? '#00BFFF' : '#000'} />, confirmarSenha, setConfirmarSenha, 'Confirmar nova senha', true, mostrarConfirmarSenha, () => setMostrarConfirmarSenha(!mostrarConfirmarSenha)
         )}
 
         <TouchableOpacity
@@ -180,11 +120,6 @@ export default function PerfilScreen({ navigation }) {
           <Text style={styles.saveButtonText}>{loading ? 'SALVANDO...' : 'SALVAR'}</Text>
         </TouchableOpacity>
       </View>
-
-      <TouchableOpacity style={styles.logout} onPress={handleLogout}>
-        <FontAwesome name="power-off" size={30} color={isDark ? '#fff' : 'black'} />
-        <Text style={styles.logoutText}>DESLOGAR DO APP</Text>
-      </TouchableOpacity>
     </View>
   );
 }
@@ -194,25 +129,16 @@ const getStyles = (isDark) =>
     container: {
       flex: 1,
       backgroundColor: isDark ? '#121212' : '#a9c2e7',
-    },
-    header: {
-      backgroundColor: '#4a4aa3',
-      padding: 20,
+      justifyContent: 'flex-start',
       alignItems: 'center',
-    },
-    headerText: {
-      color: '#fff',
-      fontSize: 20,
-      fontWeight: 'bold',
-      letterSpacing: 1,
+      paddingTop: 60,
     },
     avatarContainer: {
-      marginVertical: 20,
+      marginBottom: 20,
       alignItems: 'center',
     },
     form: {
-      marginHorizontal: 20,
-      padding: 10,
+      width: '90%',
       gap: 20,
     },
     editFieldContainer: {
@@ -229,27 +155,16 @@ const getStyles = (isDark) =>
       flex: 1,
       marginLeft: 10,
       fontSize: 16,
-      color: isDark ? '#fff' : '#000',
     },
     saveButton: {
-      backgroundColor: '#4a4aa3',
+      backgroundColor: isDark ? '#FFD700' : '#4a4aa3',
       padding: 14,
       borderRadius: 12,
       alignItems: 'center',
     },
     saveButtonText: {
-      color: '#fff',
+      color: '#000',
       fontWeight: 'bold',
       fontSize: 16,
-    },
-    logout: {
-      alignItems: 'center',
-      marginTop: 30,
-    },
-    logoutText: {
-      marginTop: 5,
-      fontSize: 14,
-      fontWeight: 'bold',
-      color: isDark ? '#fff' : '#000',
     },
   });

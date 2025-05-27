@@ -1,13 +1,12 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { View, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native'; // IMPORTANTE
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function MenuScreen({ navigation }) {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const animatedValue = useRef(new Animated.Value(0)).current;
 
-  // Executa sempre que a tela ganha foco
   useFocusEffect(
     useCallback(() => {
       const carregarTemaSalvo = async () => {
@@ -22,17 +21,17 @@ export default function MenuScreen({ navigation }) {
 
   const backgroundColor = animatedValue.interpolate({
     inputRange: [0, 1],
-    outputRange: ['#a9c2e7', '#121212'],
+    outputRange: ['#a9c2e7', '#000000'], // fundo preto no escuro
   });
 
   const buttonColor = animatedValue.interpolate({
     inputRange: [0, 1],
-    outputRange: ['rgb(223, 228, 183)', '#2d2d2d'],
+    outputRange: ['#dfe4b7', '#000000'], // fundo preto no escuro
   });
 
   const textColor = animatedValue.interpolate({
     inputRange: [0, 1],
-    outputRange: ['#000','rgb(223, 228, 183)'],
+    outputRange: ['#000', '#00BFFF'], // azul vibrante no escuro
   });
 
   const styles = getStyles(isDarkMode);
@@ -49,12 +48,18 @@ export default function MenuScreen({ navigation }) {
         { label: 'AJUSTES', route: 'Configuracoes' },
         { label: 'SOBRE', route: 'Sobre' },
       ]].map((row, rowIndex) => (
-        <Animated.View key={rowIndex} style={[styles.cardContainer]}>
+        <Animated.View key={rowIndex} style={styles.cardContainer}>
           <View style={styles.buttonRow}>
             {row.map(({ label, route }) => (
               <TouchableOpacity
                 key={label}
-                style={[styles.button, { backgroundColor: buttonColor }]}
+                style={[
+                  styles.button,
+                  {
+                    backgroundColor: isDarkMode ? '#000' : '#dfe4b7',
+                    borderColor: isDarkMode ? '#FFD700' : '#000',
+                  },
+                ]}
                 onPress={() => navigation.navigate(route)}
               >
                 <Animated.Text style={[styles.buttonText, { color: textColor }]}>
@@ -100,7 +105,6 @@ const getStyles = (isDarkMode) =>
       alignItems: 'center',
       marginHorizontal: 8,
       borderWidth: 5,
-      borderColor: isDarkMode ? 'rgb(223, 228, 183)' : '#000',
       elevation: 4,
       shadowColor: '#000',
       shadowOffset: { width: 2, height: 2 },
@@ -112,4 +116,4 @@ const getStyles = (isDarkMode) =>
       fontSize: 16,
       fontWeight: 'bold',
     },
-  }); 
+  });
