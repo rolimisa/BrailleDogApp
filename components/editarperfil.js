@@ -73,6 +73,16 @@ export default function PerfilScreen({ navigation }) {
     setLoading(false);
   };
 
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem('token');
+      Alert.alert('Logout', 'Você saiu do app.');
+      navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
+    } catch (e) {
+      Alert.alert('Erro', 'Falha ao sair do app.');
+    }
+  };
+
   const renderEditableField = (icon, value, onChange, placeholder, secure = false, mostrar, toggleMostrar) => (
     <View style={styles.editFieldContainer}>
       <View style={styles.editFieldContent}>
@@ -95,10 +105,7 @@ export default function PerfilScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <StatusBar
-        barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor={isDark ? '#1c1c1c' : '#3B4CCA'}
-      />
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={isDark ? '#1c1c1c' : '#3B4CCA'} />
 
       <View style={styles.avatarContainer}>
         <FontAwesome name="user-circle-o" size={100} color={isDark ? '#FFD700' : '#000'} />
@@ -106,10 +113,12 @@ export default function PerfilScreen({ navigation }) {
 
       <View style={styles.form}>
         {renderEditableField(
-          <MaterialCommunityIcons name="lock-outline" size={20} color={isDark ? '#00BFFF' : '#000'} />, senha, setSenha, 'Nova senha', true, mostrarSenha, () => setMostrarSenha(!mostrarSenha)
+          <MaterialCommunityIcons name="lock-outline" size={20} color={isDark ? '#00BFFF' : '#000'} />,
+          senha, setSenha, 'Nova senha', true, mostrarSenha, () => setMostrarSenha(!mostrarSenha)
         )}
         {renderEditableField(
-          <MaterialCommunityIcons name="lock-outline" size={20} color={isDark ? '#00BFFF' : '#000'} />, confirmarSenha, setConfirmarSenha, 'Confirmar nova senha', true, mostrarConfirmarSenha, () => setMostrarConfirmarSenha(!mostrarConfirmarSenha)
+          <MaterialCommunityIcons name="lock-outline" size={20} color={isDark ? '#00BFFF' : '#000'} />,
+          confirmarSenha, setConfirmarSenha, 'Confirmar nova senha', true, mostrarConfirmarSenha, () => setMostrarConfirmarSenha(!mostrarConfirmarSenha)
         )}
 
         <TouchableOpacity
@@ -120,6 +129,11 @@ export default function PerfilScreen({ navigation }) {
           <Text style={styles.saveButtonText}>{loading ? 'SALVANDO...' : 'SALVAR'}</Text>
         </TouchableOpacity>
       </View>
+
+      <TouchableOpacity style={styles.logout} onPress={handleLogout}>
+        <FontAwesome name="power-off" size={30} color={isDark ? '#FFD700' : '#000'} />
+        <Text style={[styles.logoutText, { color: isDark ? '#FFD700' : '#000' }]}>DESLOGAR DO APP</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -163,8 +177,17 @@ const getStyles = (isDark) =>
       alignItems: 'center',
     },
     saveButtonText: {
-      color: '#000',
+      color: isDark ? '#00BFFF' : '#fff',
       fontWeight: 'bold',
       fontSize: 16,
+    },
+    logout: {
+      alignItems: 'center',
+      marginTop: 30,
+    },
+    logoutText: {
+      marginTop: 5,
+      fontSize: 14,
+      fontWeight: 'bold',
     },
   });

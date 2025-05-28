@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet, Alert,
-  Animated, Image, KeyboardAvoidingView, Platform, Keyboard,
-  TouchableWithoutFeedback, ScrollView
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, Alert,Animated, Image, KeyboardAvoidingView, Platform, Keyboard,
+TouchableWithoutFeedback, ScrollView
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
+import { getStyles } from './styles/stylecadastro'; 
+
 
 const FIREBASE_API_KEY = Constants.expoConfig.extra.FIREBASE_API_KEY;
 
@@ -16,7 +16,16 @@ export default function Cadastrar({ navigation }) {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [keyboardStatus, setKeyboardStatus] = useState(false);
+  const [isDark, setIsDark] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const carregarTema = async () => {
+      const temaSalvo = await AsyncStorage.getItem('darkTheme');
+      if (temaSalvo !== null) setIsDark(temaSalvo === 'true');
+    };
+    carregarTema();
+  }, []);
 
   useEffect(() => {
     const showListener = Keyboard.addListener(
@@ -100,6 +109,8 @@ export default function Cadastrar({ navigation }) {
     }
   };
 
+  const styles = getStyles(isDark);
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -127,10 +138,10 @@ export default function Cadastrar({ navigation }) {
             )}
 
             <View style={styles.inputContainer}>
-              <Icon name="email" size={22} color="#666" style={styles.icon} />
+              <Icon name="email" size={22} color={isDark ? '#00BFFF' : '#666'} style={styles.icon} />
               <TextInput
                 placeholder="E-mail"
-                placeholderTextColor="#999"
+                placeholderTextColor={isDark ? '#aaa' : '#999'}
                 style={styles.input}
                 value={email}
                 onChangeText={setEmail}
@@ -140,17 +151,17 @@ export default function Cadastrar({ navigation }) {
             </View>
 
             <View style={styles.inputContainer}>
-              <Icon name="lock" size={22} color="#666" style={styles.icon} />
+              <Icon name="lock" size={22} color={isDark ? '#00BFFF' : '#666'} style={styles.icon} />
               <TextInput
                 placeholder="Senha (mínimo 06 caracteres)"
-                placeholderTextColor="#999"
+                placeholderTextColor={isDark ? '#aaa' : '#999'}
                 style={styles.input}
                 secureTextEntry={!passwordVisible}
                 value={password}
                 onChangeText={setPassword}
               />
               <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
-                <Icon name={passwordVisible ? "eye-off" : "eye"} size={22} color="#666" />
+                <Icon name={passwordVisible ? "eye-off" : "eye"} size={22} color={isDark ? '#00BFFF' : '#666'} />
               </TouchableOpacity>
             </View>
 
@@ -172,90 +183,3 @@ export default function Cadastrar({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#a9c2e7',
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-  contentContainer: {
-    padding: 20,
-    alignItems: 'center',
-  },
-  keyboardActive: {
-    paddingTop: 20,
-  },
-  logo: {
-    width: 200,
-    height: 250,
-    marginBottom: 20,
-    borderRadius: 80,
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: '600',
-    marginBottom: 30,
-    color: '#333',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginBottom: 15,
-    paddingHorizontal: 15,
-    width: '100%',
-    height: 50,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  icon: {
-    marginRight: 10,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: '#333',
-  },
-  button: {
-    backgroundColor: '#4a4aa3',
-    width: '100%',
-    paddingVertical: 15,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 15,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 17,
-    fontWeight: '600',
-  },
-  registerText: {
-    fontSize: 14,
-    color: '#555',
-    marginTop: 10,
-  },
-  errorContainer: {
-    backgroundColor: '#ffebee',
-    padding: 12,
-    borderRadius: 8,
-    marginVertical: 10,
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#d32f2f',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  errorText: {
-    color: '#d32f2f',
-    fontSize: 14,
-  },
-});

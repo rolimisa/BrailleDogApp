@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  SafeAreaView,
-  TouchableOpacity
-} from 'react-native';
+import {View, Text,StyleSheet,ScrollView,SafeAreaView,TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { carregarPalavrasAcertadas } from '../src/database';
 import alfBraille  from './afalbraille';
@@ -108,19 +101,19 @@ const getStyles = (isDark) => StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     marginBottom: 10,
-    color: isDark ? '#fff' : '#333',
+    color: isDark ? '#00BFFF' : '#333',
     textAlign: 'center',
     marginTop: 60,
   },
   subtitle: {
     fontSize: 18,
-    color: isDark ? '#aaa' : '#555',
+    color: isDark ? '#00BFFF' : '#555',
     textAlign: 'center',
     marginBottom: 20,
   },
   emptyMessage: {
     fontSize: 18,
-    color: isDark ? '#888' : '#555',
+    color: isDark ? '#00BFFF' : '#555',
     textAlign: 'center',
     marginTop: 50,
   },
@@ -133,29 +126,29 @@ const getStyles = (isDark) => StyleSheet.create({
     width: '100%',
   },
   palavraButton: {
-    backgroundColor: '#4a4aa3',
+    backgroundColor: isDark ? '#FFD700' : '#4a4aa3',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
   },
   palavraText: {
-    color: '#fff',
+    color: isDark ? '#00BFFF' : '#fff',
     fontSize: 18,
     fontWeight: '600',
   },
   brailleView: {
-    backgroundColor: isDark ? '#2d2d2d' : '#dfe4b7',
+    backgroundColor: isDark ? '#000' : '#dfe4b7',
     padding: 20,
     borderRadius: 10,
     marginTop: 10,
     borderWidth: 2,
-    borderColor: isDark ? '#fff' : '#333',
+    borderColor: isDark ? '#CCA300' : '#333',
   },
   brailleTitle: {
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 15,
-    color: isDark ? '#fff' : '#333',
+    color: isDark ? '#00BFFF' : '#333',
     textAlign: 'center',
   },
   brailleLetters: {
@@ -169,11 +162,11 @@ const getStyles = (isDark) => StyleSheet.create({
     marginBottom: 10,
   },
   brailleCell: {
-    backgroundColor: isDark ? '#2d2d2d' : '#dfe4b7',
+    backgroundColor: isDark ? '#000' : '#dfe4b7',
     padding: 12,
     borderRadius: 10,
-    borderWidth: 5,
-    borderColor: isDark ? 'rgb(223, 228, 183)' : '#555',
+    borderWidth: 3,
+    borderColor: isDark ? '#CCA300' : '#555',
   },
   letraContainer: {
     alignItems: 'center',
@@ -186,20 +179,20 @@ const getStyles = (isDark) => StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#555',
-    backgroundColor: isDark ? '#555' : '#fff',
+    borderWidth: 2,
+    borderColor: isDark ? '#CCA300' : '#555',
+    backgroundColor: isDark ? '#000' : '#fff',
   },
   circleDark: {
-    backgroundColor: '#444',
+    backgroundColor: isDark ? '#000' : '#fff',
   },
   filled: {
-    backgroundColor: isDark ? 'rgb(223, 228, 183)' : '#000',
+    backgroundColor: isDark ? '#FFD700' : '#000',
   },
   brailleLetterText: {
     marginTop: 8,
     fontSize: 18,
     fontWeight: '600',
-    color: isDark ? 'rgb(223, 228, 183)' : '#333',
+    color: isDark ? '#00BFFF' : '#333',
   },
 });

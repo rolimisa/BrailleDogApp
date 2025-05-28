@@ -81,7 +81,7 @@ const getStyles = (isDark) =>
     },
     desc: {
       fontSize: 20,
-      color: isDark ? '#eee' : '#333',
+      color: isDark ? '#00BFFF' : '#333',
       marginTop: 20,
       textAlign: 'justify',
     },

@@ -235,11 +235,11 @@ const getStyles = (isDark) => StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
   },
-  dicaButton: {
+   dicaButton: {
     position: 'absolute',
     top: 20,
     right: 20,
-    backgroundColor: '#4a4aa3',
+    backgroundColor: isDark ? '#FFD700' : '#4a4aa3',
     width: 50,
     height: 50,
     borderRadius: 25,
@@ -247,6 +247,10 @@ const getStyles = (isDark) => StyleSheet.create({
     alignItems: 'center',
     elevation: 3,
     zIndex: 1,
+  },
+    dicaIcone: {
+    color: isDark ? '#00BFFF' : '#fff',
+    fontSize: 28,
   },
   scoreBar: {
     height: 30,
@@ -269,44 +273,47 @@ const getStyles = (isDark) => StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-  title: {
+    title: {
     fontSize: 24,
     fontWeight: '700',
     marginBottom: 10,
-    color: isDark ? '#fff' : '#333',
+    color: isDark ? '#00BFFF' : '#333',
     textAlign: 'center',
   },
-  palavraFaltante: {
+   palavraFaltante: {
     fontSize: 38,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: isDark ? '#fff' : '#222',
+    color: isDark ? '#00BFFF' : '#222',
     letterSpacing: 3,
   },
   input: {
     backgroundColor: isDark ? '#2d2d2d' : '#fff',
-    color: isDark ? '#fff' : '#000',
+    color: isDark ? '#00BFFF' : '#000',
     width: '80%',
     height: 50,
     borderRadius: 25,
     paddingHorizontal: 20,
     fontSize: 20,
     textAlign: 'center',
-    borderColor: isDark ? '#555' : '#ccc',
+    borderColor: isDark ? '#FFD700' : '#ccc',
     borderWidth: 1,
     elevation: 3,
     marginBottom: 25,
   },
-  botao: {
-    backgroundColor: '#4a4aa3',
+    botao: {
+    backgroundColor: isDark ? '#FFD700' : '#4a4aa3',
     borderRadius: 30,
     paddingVertical: 14,
     paddingHorizontal: 40,
     elevation: 4,
     marginTop: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  botaoTexto: {
-    color: '#fff',
+    botaoTexto: {
+    color: isDark ? '#00BFFF' : '#fff',
     fontSize: 20,
     fontWeight: '700',
     textAlign: 'center',
@@ -324,9 +331,9 @@ const getStyles = (isDark) => StyleSheet.create({
     marginBottom: 15,
   },
   celaBox: {
-    backgroundColor: isDark ? '#2d2d2d' : '#dfe4b7',
+    backgroundColor: isDark ? '#000000' : '#dfe4b7',
     borderWidth: 2,
-    borderColor: isDark ? 'rgb(223, 228, 183)' : '#333',
+    borderColor: isDark ? '#CCA300' : '#000',
     borderRadius: 10,
     padding: 12,
     margin: 5,
@@ -344,13 +351,13 @@ const getStyles = (isDark) => StyleSheet.create({
   circleDark: {
     backgroundColor: '#444',
   },
-  filled: {
-    backgroundColor: isDark ? 'rgb(223, 228, 183)' : '#000',
+   filled: {
+    backgroundColor: isDark ? '#FFD700' : '#000',
   },
-  plvLabel: {
+    plvLabel: {
     marginTop: 5,
     fontSize: 24,
-    color: isDark ? 'rgb(223, 228, 183)' : '#222',
+    color: isDark ? '#00BFFF' : '#222',
     fontWeight: '600',
     textAlign: 'center',
   },
