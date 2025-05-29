@@ -44,7 +44,7 @@ export default function ExercicioBraille() {
     const disponiveis = palavras.filter(p => !palavrasJaAcertadas.includes(p));
 
     if (disponiveis.length === 0) {
-      setModalMessage('Parabéns! Você completou todas as 300 palavras! 🎉');
+      setModalMessage('Parabéns! Você completou todas as 300 palavras!');
       setModalType('success');
       setModalVisible(true);
       setPalavra('');
@@ -74,7 +74,7 @@ export default function ExercicioBraille() {
 
     if (respostaUsuario.trim().toLowerCase() === palavra[indiceFaltando]?.toLowerCase()) {
       const pontos = dicasUsadas > 0 ? 0.5 : 1;
-      setModalMessage(dicasUsadas > 0 ? 'Acertou! (+0.5 ponto)' : 'Acertou! (+1 ponto) 🎉');
+      setModalMessage(dicasUsadas > 0 ? 'Acertou! (+0.5 ponto)' : 'Acertou! (+1 ponto) ');
       setModalType('success');
 
       if (!palavrasAcertadas.includes(palavra)) {

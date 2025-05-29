@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import {View,SafeAreaView,Text,TouchableOpacity,StyleSheet,FlatList,Dimensions,Modal,Pressable,} from'react-native';
+import {
+  View,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  Dimensions,
+  Modal,
+  Pressable,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import alfBraille from './afalbraille';
 
@@ -36,7 +46,6 @@ export default function AlfabetoBrailleAnimado() {
             style={[
               styles.circle,
               bit === '1' ? styles.filled : null,
-              isDark && bit !== '1' ? styles.circleDark : null,
             ]}
           />
         ))}
@@ -47,6 +56,10 @@ export default function AlfabetoBrailleAnimado() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? '#121212' : '#a9c2e7' }}>
       <View style={styles.container}>
+        <Text style={styles.instrucao}>
+          Clique em cima da letra para visualizar a cela em Braille
+        </Text>
+
         <FlatList
           data={alfabeto}
           renderItem={({ item }) => (
@@ -69,7 +82,7 @@ export default function AlfabetoBrailleAnimado() {
           onRequestClose={() => setSelecionado(null)}
         >
           <Pressable style={styles.modalOverlay} onPress={() => setSelecionado(null)}>
-            <View style={[styles.modalCard, isDark && styles.modalCardDark]}>
+            <View style={styles.modalCard}>
               <Text style={styles.modalLetra}>{selecionado?.letra}</Text>
               {selecionado && renderBraille(selecionado.braille)}
             </View>
@@ -85,12 +98,20 @@ const getStyles = (isDark) =>
     container: {
       flex: 1,
     },
+    instrucao: {
+      fontSize: 26,
+      fontWeight: '600',
+      textAlign: 'center',
+      marginVertical: 16,
+      paddingHorizontal: 20,
+      color: isDark ? '#00BFFF' : '#000',
+    },
     grid: {
       alignItems: 'center',
       paddingBottom: 20,
     },
     letra: {
-      backgroundColor: isDark ? '#2d2d2d' : '#dfe4b7',
+      backgroundColor: isDark ? '#000000' : '#dfe4b7',
       width: Dimensions.get('window').width / 3.5,
       height: 100,
       borderRadius: 50,
@@ -98,12 +119,12 @@ const getStyles = (isDark) =>
       justifyContent: 'center',
       alignItems: 'center',
       borderWidth: 5,
-      borderColor: isDark ? 'rgb(223, 228, 183)' : 'black',
+      borderColor: isDark ? '#FFD700' : 'black',
     },
     textoLetra: {
       fontSize: 26,
       fontWeight: 'bold',
-      color: isDark ? 'rgb(223, 228, 183)' : '#000',
+      color: isDark ? '#00BFFF' : '#000',
     },
     modalOverlay: {
       flex: 1,
@@ -112,20 +133,17 @@ const getStyles = (isDark) =>
       alignItems: 'center',
     },
     modalCard: {
-      backgroundColor: '#dfe4b7',
+      backgroundColor: isDark ? '#000000' : '#dfe4b7',
       borderRadius: 16,
       padding: 24,
       alignItems: 'center',
       width: 220,
     },
-    modalCardDark: {
-      backgroundColor: '#2d2d2d',
-    },
     modalLetra: {
       fontSize: 40,
       fontWeight: 'bold',
       marginBottom: 20,
-      color: isDark ?  'rgb(223, 228, 183)' : '#000',
+      color: isDark ? '#00BFFF' : '#000',
     },
     cela: {
       flexDirection: 'row',
@@ -138,15 +156,12 @@ const getStyles = (isDark) =>
       width: 80,
       height: 80,
       borderRadius: 50,
-      borderWidth: 1,
-      borderColor: '#000',
       margin: 5,
-      backgroundColor: '#fff',
-    },
-    circleDark: {
-      backgroundColor: '#555',
+      borderWidth: 2,
+      backgroundColor: isDark ? 'transparent' : '#fff',
+      borderColor: isDark ? '#FFD700' : '#000',
     },
     filled: {
-      backgroundColor: isDark ? 'rgb(223, 228, 183)' : '#000',
+      backgroundColor: isDark ? '#FFD700' : '#000',
     },
   });
