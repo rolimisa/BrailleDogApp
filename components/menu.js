@@ -21,17 +21,12 @@ export default function MenuScreen({ navigation }) {
 
   const backgroundColor = animatedValue.interpolate({
     inputRange: [0, 1],
-    outputRange: ['#a9c2e7', '#000000'], // fundo preto no escuro
-  });
-
-  const buttonColor = animatedValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['#dfe4b7', '#000000'], // fundo preto no escuro
+    outputRange: ['#a9c2e7', '#000000'],
   });
 
   const textColor = animatedValue.interpolate({
     inputRange: [0, 1],
-    outputRange: ['#000', '#00BFFF'], // azul vibrante no escuro
+    outputRange: ['#000', '#00BFFF'],
   });
 
   const styles = getStyles(isDarkMode);
@@ -48,7 +43,7 @@ export default function MenuScreen({ navigation }) {
         { label: 'AJUSTES', route: 'Configuracoes' },
         { label: 'SOBRE', route: 'Sobre' },
       ]].map((row, rowIndex) => (
-        <Animated.View key={rowIndex} style={styles.cardContainer}>
+        <View key={rowIndex} style={styles.cardContainer}>
           <View style={styles.buttonRow}>
             {row.map(({ label, route }) => (
               <TouchableOpacity
@@ -68,7 +63,7 @@ export default function MenuScreen({ navigation }) {
               </TouchableOpacity>
             ))}
           </View>
-        </Animated.View>
+        </View>
       ))}
     </Animated.View>
   );
@@ -86,11 +81,6 @@ const getStyles = (isDarkMode) =>
       borderRadius: 20,
       padding: 10,
       marginVertical: 20,
-      elevation: 4,
-      shadowColor: '#000',
-      shadowOffset: { width: 2, height: 2 },
-      shadowOpacity: 0.2,
-      shadowRadius: 4,
     },
     buttonRow: {
       flexDirection: 'row',
@@ -105,11 +95,7 @@ const getStyles = (isDarkMode) =>
       alignItems: 'center',
       marginHorizontal: 8,
       borderWidth: 5,
-      elevation: 4,
-      shadowColor: '#000',
-      shadowOffset: { width: 2, height: 2 },
-      shadowOpacity: 0.2,
-      shadowRadius: 4,
+      // Removido elevation e sombra
     },
     buttonText: {
       textAlign: 'center',
